@@ -1,0 +1,61 @@
+{
+  "app": {
+    "title": "Trader's Mind"
+  },
+  "actions": {
+    "buy": "Buy",
+    "sell": "Sell",
+    "save": "Save",
+    "cancel": "Cancel",
+    "add": "Add Trade",
+    "edit": "Edit",
+    "addNote": "Add Note",
+    "addWatch": "Add Watch"
+  },
+  "trade": {
+    "newTrade": "New Trade",
+    "symbol": "Ticker Symbol",
+    "type": "Trade Type",
+    "price": "Entry Price",
+    "stopLoss": "Stop Loss",
+    "riskPerTrade": "Risk %",
+    "shares": "Shares",
+    "noTrades": "No trades yet. Add your first trade to get started.",
+    "addNote": "Add your note here...",
+    "lastAction": "Last Action",
+    "totalUSD": "Total USD",
+    "status": "Status",
+    "setup": "Setup",
+    "actions": "Actions",
+    "openPositions": "Open Positions",
+    "closedPositions": "Closed Positions",
+    "selectSetup": "Select Setup"
+  },
+  "settings": {
+    "accountSize": "Account Size",
+    "riskPerTrade": "Risk per Trade",
+    "currencySymbol": "$",
+    "percentageSymbol": "%"
+  },
+  "validation": {
+    "required": "This field is required",
+    "invalidNumber": "Please enter a valid number",
+    "invalidShares": "Please enter a valid number of shares"
+  },
+  "watch": {
+    "title": "Watch List",
+    "symbol": "Symbol",
+    "status": "Status",
+    "lastUpdated": "Last Updated",
+    "notes": "Notes",
+    "noNotes": "No notes yet",
+    "addWatch": "Add Watch",
+    "noteCount": "note(s)",
+    "statuses": {
+      "setupSuccess": "✅ Setup Success",
+      "tip": "✍️ Tip",
+      "watching": "👀 Watching",
+      "failed": "❌ Failed"
+    }
+  }
+}
