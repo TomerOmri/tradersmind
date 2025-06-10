@@ -3,6 +3,12 @@
     "title": "SwingTrader Mind",
     "direction": "ltr"
   },
+  "header": {
+    "trades": "Trades",
+    "process": "Process",
+    "reports": "Reports",
+    "journal": "Journal"
+  },
   "actions": {
     "buy": "Buy",
     "sell": "Sell",

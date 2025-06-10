@@ -6,6 +6,7 @@ import {
   type TradeAction,
   type Trade,
 } from "../store/tradeStore";
+import { useGeneralSettingsStore } from "./GeneralSettings";
 import {
   TrashIcon,
   ChevronDownIcon,
@@ -47,6 +48,7 @@ function TradeTable({
   const { t } = useTranslation();
   const removeNote = useTradeStore((state) => state.removeNote);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const accountSize = useGeneralSettingsStore((state) => state.accountSize);
 
   const calculateTotalShares = (actions: TradeAction[] | undefined) => {
     if (!actions?.length) return 0;
@@ -86,9 +88,16 @@ function TradeTable({
 
   const calculateTotalUSD = (actions: TradeAction[] | undefined) => {
     if (!actions?.length) return 0;
-    return actions.reduce((acc, action) => {
-      return acc + action.price * action.quantity;
-    }, 0);
+    const totalShares = calculateTotalShares(actions);
+    if (totalShares <= 0) return 0;
+
+    // Find the most recent buy action for the current price
+    const lastBuyAction = [...actions]
+      .reverse()
+      .find((action) => action.type === "buy");
+    if (!lastBuyAction) return 0;
+
+    return lastBuyAction.price * totalShares;
   };
 
   const calculateRiskPercentage = (actions: TradeAction[] | undefined) => {
@@ -266,6 +275,16 @@ function TradeTable({
                   {calculateTotalUSD(trade.actions).toLocaleString("en-US", {
                     maximumFractionDigits: 0,
                   })}
+                  {accountSize > 0 && (
+                    <span className="ml-1 text-gray-500 dark:text-gray-400">
+                      (
+                      {(
+                        (calculateTotalUSD(trade.actions) / accountSize) *
+                        100
+                      ).toFixed(1)}
+                      %)
+                    </span>
+                  )}
                 </td>
                 <td className="px-6 py-4">
                   <div className="flex space-x-4">

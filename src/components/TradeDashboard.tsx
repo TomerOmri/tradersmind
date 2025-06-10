@@ -25,29 +25,29 @@ function MetricCard({
   trend,
 }: MetricCardProps) {
   return (
-    <div className="flex items-center gap-3 py-3 px-3 sm:px-4">
+    <div className="group relative flex items-center gap-2.5 p-2.5 rounded-lg transition-all duration-200 hover:bg-gray-50 dark:hover:bg-gray-800/50">
       <div
-        className={`p-1.5 sm:p-2 rounded-full flex-shrink-0 ${
+        className={`p-1.5 rounded-lg flex-shrink-0 transition-colors ${
           trend === "up"
-            ? "bg-green-50 text-green-600 dark:bg-green-900/20 dark:text-green-400"
+            ? "bg-green-50/80 text-green-600 dark:bg-green-900/30 dark:text-green-400"
             : trend === "down"
-            ? "bg-red-50 text-red-600 dark:bg-red-900/20 dark:text-red-400"
-            : "bg-gray-50 text-gray-600 dark:bg-gray-800 dark:text-gray-400"
-        }`}
+            ? "bg-red-50/80 text-red-600 dark:bg-red-900/30 dark:text-red-400"
+            : "bg-gray-50/80 text-gray-600 dark:bg-gray-800/50 dark:text-gray-400"
+        } group-hover:bg-opacity-100`}
       >
-        <Icon className="h-4 w-4 sm:h-5 sm:w-5" />
+        <Icon className="h-4 w-4" />
       </div>
       <div className="min-w-0 flex-1">
-        <p className="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
+        <p className="text-xs font-medium text-gray-500 dark:text-gray-400 truncate">
           {title}
         </p>
-        <div className="flex items-baseline gap-1.5 sm:gap-2">
-          <p className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white truncate">
+        <div className="flex items-baseline gap-1.5">
+          <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">
             {value}
           </p>
           {change && (
-            <p
-              className={`text-xs sm:text-sm font-medium truncate ${
+            <span
+              className={`text-xs font-medium truncate ${
                 trend === "up"
                   ? "text-green-600 dark:text-green-400"
                   : trend === "down"
@@ -56,7 +56,7 @@ function MetricCard({
               }`}
             >
               {change}
-            </p>
+            </span>
           )}
         </div>
       </div>
@@ -118,7 +118,7 @@ export default function TradeDashboard() {
   const metrics = calculateOpenPositionsMetrics(trades);
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm divide-y divide-gray-100 dark:divide-gray-700">
+    <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm divide-y divide-gray-100 dark:divide-gray-700">
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 divide-y divide-x sm:divide-y-0 rtl:divide-x-reverse divide-gray-100 dark:divide-gray-700">
         <MetricCard
           title={t("dashboard.activePositions")}

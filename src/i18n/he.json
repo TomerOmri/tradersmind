@@ -3,6 +3,12 @@
     "title": "סווינג טריידר",
     "direction": "rtl"
   },
+  "header": {
+    "trades": "עסקאות",
+    "process": "תהליך",
+    "reports": "דוחות",
+    "journal": "יומן"
+  },
   "actions": {
     "buy": "קנייה",
     "sell": "מכירה",

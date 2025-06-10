@@ -50,7 +50,7 @@ export default function Header() {
                     : "text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
                 }`}
               >
-                Trades
+                {t("header.trades")}
               </Link>
               <Link
                 to="/process"
@@ -60,7 +60,7 @@ export default function Header() {
                     : "text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
                 }`}
               >
-                Process
+                {t("header.process")}
               </Link>
               <Link
                 to="/reports"
@@ -70,7 +70,7 @@ export default function Header() {
                     : "text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
                 }`}
               >
-                {t("reports.title")}
+                {t("header.reports")}
               </Link>
               <Link
                 to="/journal"
@@ -80,25 +80,25 @@ export default function Header() {
                     : "text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
                 }`}
               >
-                {t("journal.title")}
+                {t("header.journal")}
               </Link>
             </nav>
           </div>
           <div className="flex items-center gap-4">
             <button
               onClick={toggleLanguage}
-              className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+              className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 dark:bg-gray-700 rounded-lg"
             >
-              <LanguageIcon className="h-6 w-6" />
+              <LanguageIcon className="h-5 w-5" />
             </button>
             <button
               onClick={toggleTheme}
-              className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+              className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 dark:bg-gray-700 rounded-lg"
             >
               {theme === "dark" ? (
-                <SunIcon className="h-6 w-6" />
+                <SunIcon className="h-5 w-5" />
               ) : (
-                <MoonIcon className="h-6 w-6" />
+                <MoonIcon className="h-5 w-5" />
               )}
             </button>
           </div>
