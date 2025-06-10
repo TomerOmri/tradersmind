@@ -178,10 +178,22 @@ function TradeTable({
                   })}
                 </td>
                 <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-100">
-                  $
-                  {calculatePnL(trade.actions).toLocaleString("en-US", {
-                    maximumFractionDigits: 0,
-                  })}
+                  <span
+                    className={`inline-flex ${
+                      calculatePnL(trade.actions) >= 0
+                        ? "text-emerald-600 dark:text-emerald-400"
+                        : "text-red-600 dark:text-red-400"
+                    }`}
+                    style={{ direction: "ltr" }}
+                  >
+                    {calculatePnL(trade.actions) >= 0 ? "+" : "-"}$
+                    {Math.abs(calculatePnL(trade.actions)).toLocaleString(
+                      "en-US",
+                      {
+                        maximumFractionDigits: 0,
+                      }
+                    )}
+                  </span>
                 </td>
                 <td className="px-6 py-4">
                   <div className="flex space-x-4">
@@ -535,7 +547,7 @@ export default function ClosedPositions() {
                           : "text-red-600 dark:text-red-400"
                       }
                     >
-                      {metrics.totalPnL >= 0 ? '+' : '-'}$
+                      {metrics.totalPnL >= 0 ? "+" : "-"}$
                       {Math.abs(metrics.totalPnL).toLocaleString("en-US", {
                         maximumFractionDigits: 0,
                       })}

@@ -276,7 +276,7 @@ function TradeTable({
                     maximumFractionDigits: 0,
                   })}
                   {accountSize > 0 && (
-                    <span className="ml-1 text-gray-500 dark:text-gray-400">
+                    <span className="ml-1 mr-1 text-gray-500 dark:text-gray-400">
                       (
                       {(
                         (calculateTotalUSD(trade.actions) / accountSize) *
