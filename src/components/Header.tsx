@@ -62,6 +62,16 @@ export default function Header() {
               >
                 Process
               </Link>
+              <Link
+                to="/reports"
+                className={`text-sm font-medium ${
+                  isActive("/reports")
+                    ? "text-primary-600 dark:text-primary-400"
+                    : "text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                }`}
+              >
+                {t("reports.title")}
+              </Link>
             </nav>
           </div>
           <div className="flex items-center gap-4">

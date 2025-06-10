@@ -18,7 +18,6 @@ import EditActionModal from "./EditActionModal";
 import AddNoteForm from "./AddNoteForm";
 import TradeDashboard from "./TradeDashboard";
 import GeneralSettings from "./GeneralSettings";
-import AddTradeModal from "./AddTradeModal";
 
 interface ExpandedState {
   [key: string]: boolean;
@@ -168,12 +167,12 @@ function TradeTable({
                 <td className="px-2 py-4 w-10">
                   <button
                     onClick={() => toggleExpand(trade.id)}
-                    className="p-1.5 rounded-full hover:bg-black/5 dark:hover:bg-white/5 transition-colors duration-150"
+                    className="p-1.5 rounded-full hover:bg-gray-500 dark:hover:bg-gray-700 dark:bg-gray-700 transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:ring-opacity-50"
                   >
                     {expanded[trade.id] ? (
-                      <ChevronUpIcon className="h-4 w-4 text-gray-500 dark:text-gray-400" />
+                      <ChevronUpIcon className="h-4 w-4 text-gray-600 dark:text-gray-300" />
                     ) : (
-                      <ChevronDownIcon className="h-4 w-4 text-gray-500 dark:text-gray-400" />
+                      <ChevronDownIcon className="h-4 w-4 text-gray-600 dark:text-gray-300" />
                     )}
                   </button>
                 </td>
@@ -255,17 +254,17 @@ function TradeTable({
                   {trade.setupType ? t(`setup.${trade.setupType}`) : "-"}
                 </td>
                 <td className="px-6 py-4">
-                  <div className="flex space-x-3">
+                  <div className="flex space-x-4">
                     <button
                       onClick={() => onAddAction(trade.id)}
-                      className="p-1.5 rounded-full text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-colors duration-150"
+                      className="mx-2 p-1.5 rounded-full text-primary-600 dark:text-primary-400 dark:bg-gray-700 hover:bg-primary-100 dark:hover:bg-primary-900/30 transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:ring-opacity-50"
                       title="Add action"
                     >
                       <PlusIcon className="h-4 w-4" />
                     </button>
                     <button
                       onClick={() => onRemoveTrade(trade.id)}
-                      className="p-1.5 rounded-full text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors duration-150"
+                      className="p-1.5 rounded-full text-red-600 dark:bg-gray-700 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30 transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400 focus:ring-opacity-50"
                       title="Remove trade"
                     >
                       <TrashIcon className="h-4 w-4" />
@@ -357,7 +356,7 @@ function TradeTable({
                                         onClick={() =>
                                           onEditAction(trade.id, action)
                                         }
-                                        className="p-1.5 rounded-full text-primary-600 dark:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-colors duration-150"
+                                        className="p-1.5 rounded-full text-primary-600 dark:text-primary-400 hover:bg-primary-100 dark:hover:bg-primary-900/30 transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:ring-opacity-50"
                                       >
                                         <PencilIcon className="h-4 w-4" />
                                       </button>
@@ -365,7 +364,7 @@ function TradeTable({
                                         onClick={() =>
                                           onRemoveAction(trade.id, action.id)
                                         }
-                                        className="p-1.5 rounded-full text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors duration-150"
+                                        className="p-1.5 rounded-full text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30 transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400 focus:ring-opacity-50"
                                       >
                                         <TrashIcon className="h-4 w-4" />
                                       </button>
@@ -414,7 +413,7 @@ function TradeTable({
                                     onClick={() =>
                                       removeNote(trade.id, note.id)
                                     }
-                                    className="p-1.5 rounded-full text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors duration-150"
+                                    className="p-1.5 rounded-full text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30 transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400 focus:ring-opacity-50"
                                   >
                                     <TrashIcon className="h-4 w-4" />
                                   </button>
@@ -478,10 +477,7 @@ export default function TradeList() {
 
   return (
     <div className="space-y-6">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
-          {t("app.title")}
-        </h1>
+      <div className="mb-6 flex justify-center">
         <GeneralSettings />
       </div>
       <TradeDashboard />

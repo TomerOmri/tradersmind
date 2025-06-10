@@ -29,9 +29,12 @@ export default function AddTradeButton() {
       <div className="flex justify-end">
         <button
           onClick={() => setIsOpen(true)}
-          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 dark:focus:ring-offset-gray-900"
+          className="inline-flex items-center px-3 py-2 text-sm font-medium rounded-lg
+          bg-gradient-to-r from-blue-900 to-blue-800 text-blue-50
+          hover:from-blue-950 hover:to-blue-900 
+          active:scale-[0.98] transition-all"
         >
-          <PlusIcon className="h-5 w-5 me-2" />
+          <PlusIcon className="h-5 w-5 me-2 transition-transform group-hover:scale-110" />
           {t("actions.add")}
         </button>
       </div>

@@ -1,46 +1,98 @@
 {
   "app": {
-    "title": "Trader's Mind"
+    "title": "SwingTrader Mind",
+    "direction": "ltr"
   },
   "actions": {
     "buy": "Buy",
     "sell": "Sell",
+    "add": "Add",
+    "edit": "Edit",
     "save": "Save",
     "cancel": "Cancel",
-    "add": "Add Trade",
-    "edit": "Edit",
-    "addNote": "Add Note",
-    "addWatch": "Add Watch"
+    "delete": "Delete",
+    "newTrade": "New Trade",
+    "addWatch": "Add Watch",
+    "addNote": "Add Note"
   },
   "trade": {
-    "newTrade": "New Trade",
-    "symbol": "Ticker Symbol",
-    "type": "Trade Type",
-    "price": "Entry Price",
+    "symbol": "Symbol",
+    "type": "Type",
+    "price": "Price",
+    "quantity": "Quantity",
+    "date": "Date",
     "stopLoss": "Stop Loss",
-    "riskPerTrade": "Risk %",
-    "shares": "Shares",
-    "noTrades": "No trades yet. Add your first trade to get started.",
-    "addNote": "Add your note here...",
-    "lastAction": "Last Action",
-    "totalUSD": "Total USD",
+    "targetPrice": "Target Price",
+    "notes": "Notes",
+    "addNote": "Add a note...",
+    "noNotes": "No notes yet",
+    "noTrades": "No trades yet",
+    "marketCondition": "Market Condition",
+    "relativeStrength": "Relative Strength",
+    "industryGroupRS": "Industry Group RS",
+    "riskPerTrade": "Risk Per Trade",
+    "setupType": "Setup Type",
+    "entryTrigger": "Entry Trigger",
+    "timeframe": "Timeframe",
+    "marketTrend": "Market Trend",
+    "volumeAnalysis": "Volume Analysis",
+    "keyLevels": "Key Levels",
     "status": "Status",
+    "shares": "Shares",
+    "avgPrice": "Avg Price",
+    "pnl": "P&L",
     "setup": "Setup",
     "actions": "Actions",
     "openPositions": "Open Positions",
-    "closedPositions": "Closed Positions",
-    "selectSetup": "Select Setup"
+    "closedPositions": "Closed Positions"
+  },
+  "status": {
+    "open": "Open",
+    "win": "Win",
+    "loss": "Loss"
   },
   "settings": {
-    "accountSize": "Account Size",
-    "riskPerTrade": "Risk per Trade",
-    "currencySymbol": "$",
-    "percentageSymbol": "%"
+    "language": "Language",
+    "theme": "Theme",
+    "dark": "Dark",
+    "light": "Light",
+    "general": "General Settings",
+    "accountSize": "Trading Account Size",
+    "riskPerTrade": "Risk Per Trade",
+    "save": "Save Settings",
+    "edit": "Edit Settings",
+    "percentageSymbol": "%",
+    "currencySymbol": "$"
   },
-  "validation": {
-    "required": "This field is required",
-    "invalidNumber": "Please enter a valid number",
-    "invalidShares": "Please enter a valid number of shares"
+  "setup": {
+    "breakout": "Breakout",
+    "pullback": "Pullback",
+    "momentum": "Momentum",
+    "reversal": "Reversal",
+    "gap": "Gap",
+    "other": "Other"
+  },
+  "market": {
+    "bullish": "Bullish",
+    "bearish": "Bearish",
+    "neutral": "Neutral",
+    "correction": "Correction",
+    "uptrend": "Uptrend",
+    "downtrend": "Downtrend",
+    "sideways": "Sideways"
+  },
+  "dashboard": {
+    "winRate": "Win %",
+    "totalPnL": "P&L",
+    "activePositions": "Active Positions",
+    "totalTrades": "Total",
+    "avgHoldingTime": "Hold",
+    "avgRiskPerTrade": "Risk",
+    "days": "d",
+    "totalInMarket": "Total in Market",
+    "percentInMarket": "% in Market",
+    "totalRisk": "Total Risk",
+    "avgRisk": "Avg Risk %"
   },
   "watch": {
     "title": "Watch List",
@@ -49,8 +101,8 @@
     "lastUpdated": "Last Updated",
     "notes": "Notes",
     "noNotes": "No notes yet",
-    "addWatch": "Add Watch",
-    "noteCount": "note(s)",
+    "latestNote": "Latest Note",
+    "addWatch": "Add New Watch",
     "statuses": {
       "setupSuccess": "✅ Setup Success",
       "tip": "✍️ Tip",

@@ -1,12 +1,12 @@
 import { useTranslation } from "react-i18next";
 import { useTradeStore, type Trade } from "../store/tradeStore";
+import { useGeneralSettingsStore } from "./GeneralSettings";
 import {
-  ArrowTrendingUpIcon,
-  ArrowTrendingDownIcon,
-  ChartBarIcon,
-  ScaleIcon,
-  BanknotesIcon,
-  ClockIcon,
+  CircleStackIcon,
+  WalletIcon,
+  ChartPieIcon,
+  ShieldExclamationIcon,
+  ExclamationTriangleIcon,
 } from "@heroicons/react/24/outline";
 
 interface MetricCardProps {
@@ -25,141 +25,136 @@ function MetricCard({
   trend,
 }: MetricCardProps) {
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-3">
-      <div className="flex items-center gap-2">
-        <div className="p-1.5 bg-primary-100 dark:bg-primary-900/30 rounded-lg">
-          <Icon className="h-4 w-4 text-primary-600 dark:text-primary-400" />
-        </div>
-        <div>
-          <p className="text-xs font-medium text-gray-500 dark:text-gray-400">
-            {title}
+    <div className="flex items-center gap-3 py-3 px-3 sm:px-4">
+      <div
+        className={`p-1.5 sm:p-2 rounded-full flex-shrink-0 ${
+          trend === "up"
+            ? "bg-green-50 text-green-600 dark:bg-green-900/20 dark:text-green-400"
+            : trend === "down"
+            ? "bg-red-50 text-red-600 dark:bg-red-900/20 dark:text-red-400"
+            : "bg-gray-50 text-gray-600 dark:bg-gray-800 dark:text-gray-400"
+        }`}
+      >
+        <Icon className="h-4 w-4 sm:h-5 sm:w-5" />
+      </div>
+      <div className="min-w-0 flex-1">
+        <p className="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
+          {title}
+        </p>
+        <div className="flex items-baseline gap-1.5 sm:gap-2">
+          <p className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white truncate">
+            {value}
           </p>
-          <div className="flex items-baseline gap-1">
-            <p className="text-sm font-semibold text-gray-900 dark:text-white">
-              {value}
+          {change && (
+            <p
+              className={`text-xs sm:text-sm font-medium truncate ${
+                trend === "up"
+                  ? "text-green-600 dark:text-green-400"
+                  : trend === "down"
+                  ? "text-red-600 dark:text-red-400"
+                  : "text-gray-500 dark:text-gray-400"
+              }`}
+            >
+              {change}
             </p>
-            {change && (
-              <p
-                className={`text-xs font-medium ${
-                  trend === "up"
-                    ? "text-green-600 dark:text-green-400"
-                    : trend === "down"
-                    ? "text-red-600 dark:text-red-400"
-                    : "text-gray-500 dark:text-gray-400"
-                }`}
-              >
-                {change}
-              </p>
-            )}
-          </div>
+          )}
         </div>
       </div>
     </div>
   );
 }
 
-function calculateMetrics(trades: Trade[], t: (key: string) => string) {
-  const totalTrades = trades.length;
-  const closedTrades = trades.filter((t) => !t.isActive);
-  const winningTrades = closedTrades.filter(
-    (t) =>
-      t.actions.reduce(
-        (acc, action) =>
-          acc +
-          (action.type === "sell"
-            ? action.price * action.quantity
-            : -action.price * action.quantity),
-        0
-      ) > 0
-  );
+function calculateOpenPositionsMetrics(trades: Trade[]) {
+  const { accountSize } = useGeneralSettingsStore();
+  const activeTrades = trades.filter((t) => t.isActive);
 
-  const winRate = totalTrades
-    ? ((winningTrades.length / closedTrades.length) * 100).toFixed(1)
-    : "0.0";
-
-  const totalPnL = trades.reduce((acc, trade) => {
-    return (
-      acc +
-      trade.actions.reduce(
-        (acc, action) =>
-          acc +
-          (action.type === "sell"
-            ? action.price * action.quantity
-            : -action.price * action.quantity),
-        0
-      )
-    );
+  // Calculate total money in market
+  const totalInMarket = activeTrades.reduce((acc, trade) => {
+    const lastBuyAction = [...trade.actions]
+      .reverse()
+      .find((action) => action.type === "buy");
+    if (!lastBuyAction) return acc;
+    return acc + lastBuyAction.price * lastBuyAction.quantity;
   }, 0);
 
-  const avgHoldingTime = closedTrades.length
-    ? Math.round(
-        closedTrades.reduce((acc, trade) => {
-          const firstAction = new Date(trade.actions[0].date);
-          const lastAction = new Date(
-            trade.actions[trade.actions.length - 1].date
-          );
-          return acc + (lastAction.getTime() - firstAction.getTime());
-        }, 0) /
-          closedTrades.length /
-          (1000 * 60 * 60 * 24)
-      )
-    : 0;
+  // Calculate percentage of account in market
+  const percentInMarket = accountSize ? (totalInMarket / accountSize) * 100 : 0;
 
-  const avgRiskPerTrade =
-    trades.reduce((acc, trade) => acc + (trade.riskPerTrade || 0), 0) /
-    trades.filter((t) => t.riskPerTrade).length;
+  // Calculate total risk amount
+  const totalRisk = activeTrades.reduce((acc, trade) => {
+    const lastBuyAction = [...trade.actions]
+      .reverse()
+      .find((action) => action.type === "buy");
+    if (!lastBuyAction || !lastBuyAction.stopLoss) return acc;
+    const riskPerShare = lastBuyAction.price - lastBuyAction.stopLoss;
+    return acc + riskPerShare * lastBuyAction.quantity;
+  }, 0);
+
+  // Calculate average risk percentage across active positions
+  const avgRiskPercent =
+    activeTrades.reduce((acc, trade) => {
+      const lastBuyAction = [...trade.actions]
+        .reverse()
+        .find((action) => action.type === "buy");
+      if (!lastBuyAction || !lastBuyAction.stopLoss) return acc;
+      const riskPercent =
+        ((lastBuyAction.price - lastBuyAction.stopLoss) / lastBuyAction.price) *
+        100;
+      return acc + riskPercent;
+    }, 0) / (activeTrades.length || 1);
 
   return {
-    totalTrades,
-    winRate,
-    totalPnL,
-    avgHoldingTime,
-    avgRiskPerTrade: avgRiskPerTrade || 0,
-    activePositions: trades.filter((t) => t.isActive).length,
+    activePositions: activeTrades.length,
+    totalInMarket,
+    percentInMarket,
+    totalRisk,
+    avgRiskPercent,
   };
 }
 
 export default function TradeDashboard() {
   const { t } = useTranslation();
   const trades = useTradeStore((state) => state.trades);
-  const metrics = calculateMetrics(trades, t);
+  const metrics = calculateOpenPositionsMetrics(trades);
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
-      <MetricCard
-        title={t("dashboard.winRate")}
-        value={`${metrics.winRate}%`}
-        icon={ChartBarIcon}
-        trend={Number(metrics.winRate) > 50 ? "up" : "down"}
-      />
-      <MetricCard
-        title={t("dashboard.totalPnL")}
-        value={`$${metrics.totalPnL.toFixed(2)}`}
-        icon={BanknotesIcon}
-        trend={metrics.totalPnL > 0 ? "up" : "down"}
-      />
-      <MetricCard
-        title={t("dashboard.activePositions")}
-        value={metrics.activePositions}
-        icon={ScaleIcon}
-      />
-      <MetricCard
-        title={t("dashboard.totalTrades")}
-        value={metrics.totalTrades}
-        icon={ChartBarIcon}
-      />
-      <MetricCard
-        title={t("dashboard.avgHoldingTime")}
-        value={metrics.avgHoldingTime}
-        change={t("dashboard.days")}
-        icon={ClockIcon}
-      />
-      <MetricCard
-        title={t("dashboard.avgRiskPerTrade")}
-        value={`${metrics.avgRiskPerTrade.toFixed(1)}%`}
-        icon={ArrowTrendingDownIcon}
-        trend={metrics.avgRiskPerTrade <= 2 ? "up" : "down"}
-      />
+    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm divide-y divide-gray-100 dark:divide-gray-700">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 divide-y divide-x sm:divide-y-0 rtl:divide-x-reverse divide-gray-100 dark:divide-gray-700">
+        <MetricCard
+          title={t("dashboard.activePositions")}
+          value={metrics.activePositions}
+          icon={CircleStackIcon}
+        />
+        <MetricCard
+          title={t("dashboard.totalInMarket")}
+          value={`$${metrics.totalInMarket.toLocaleString("en-US", {
+            maximumFractionDigits: 0,
+          })}`}
+          icon={WalletIcon}
+        />
+        <MetricCard
+          title={t("dashboard.percentInMarket")}
+          value={`${metrics.percentInMarket.toFixed(1)}%`}
+          icon={ChartPieIcon}
+          trend={metrics.percentInMarket > 80 ? "down" : "neutral"}
+        />
+        <MetricCard
+          title={t("dashboard.totalRisk")}
+          value={`$${metrics.totalRisk.toLocaleString("en-US", {
+            maximumFractionDigits: 0,
+          })}`}
+          icon={ShieldExclamationIcon}
+          trend={
+            metrics.totalRisk > metrics.totalInMarket * 0.02 ? "down" : "up"
+          }
+        />
+        <MetricCard
+          title={t("dashboard.avgRisk")}
+          value={`${metrics.avgRiskPercent.toFixed(1)}%`}
+          icon={ExclamationTriangleIcon}
+          trend={metrics.avgRiskPercent > 2 ? "down" : "up"}
+        />
+      </div>
     </div>
   );
 }

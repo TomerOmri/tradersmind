@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { PencilIcon, CheckIcon } from "@heroicons/react/24/outline";
+import AddTradeButton from "./AddTradeButton";
 
 interface GeneralSettingsStore {
   accountSize: number;
@@ -111,6 +112,8 @@ export default function GeneralSettings() {
         isRTL ? "justify-end" : "justify-start"
       }`}
     >
+      <AddTradeButton />
+
       <SettingItem
         label={t("settings.accountSize")}
         value={accountSize.toLocaleString()}
@@ -132,12 +135,12 @@ export default function GeneralSettings() {
       />
       <button
         onClick={() => (isEditing ? handleSave() : setIsEditing(true))}
-        className="p-1 hover:bg-[#feb062]/10 rounded transition-colors duration-150"
+        className="p-1 hover:bg-[#feb062]/10 rounded dark:bg-gray-700 transition-colors duration-150"
       >
         {isEditing ? (
-          <CheckIcon className="h-4 w-4 text-[#feb062]" />
+          <CheckIcon className="h-4 w-4 text-[#feb062] dark:bg-gray-700" />
         ) : (
-          <PencilIcon className="h-4 w-4 text-[#feb062]" />
+          <PencilIcon className="h-4 w-4 text-[#feb062] dark:bg-gray-700" />
         )}
       </button>
     </div>

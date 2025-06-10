@@ -349,29 +349,36 @@ export default function Process() {
             <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
               <thead className="bg-gray-50 dark:bg-gray-900">
                 <tr>
-                  <th className="w-10 px-2" />
+                  <th className="w-8 px-1" />
                   <th
-                    className={`px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider ${
+                    className={`px-2 py-2 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider w-36 ${
                       isRTL ? "text-right" : "text-left"
                     }`}
                   >
                     {t("watch.status")}
                   </th>
                   <th
-                    className={`px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider ${
+                    className={`px-2 py-2 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider w-32 ${
                       isRTL ? "text-right" : "text-left"
                     }`}
                   >
                     {t("watch.symbol")}
                   </th>
                   <th
-                    className={`px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider ${
+                    className={`px-2 py-2 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider flex-1 min-w-[200px] ${
+                      isRTL ? "text-right" : "text-left"
+                    }`}
+                  >
+                    {t("watch.latestNote")}
+                  </th>
+                  <th
+                    className={`px-2 py-2 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider w-32 ${
                       isRTL ? "text-right" : "text-left"
                     }`}
                   >
                     {t("watch.lastUpdated")}
                   </th>
-                  <th className="w-10 px-2" />
+                  <th className="w-16 px-1" />
                 </tr>
               </thead>
               <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
@@ -381,10 +388,10 @@ export default function Process() {
                       key={watch.id}
                       className="hover:bg-gray-50 dark:hover:bg-gray-700"
                     >
-                      <td className="px-2">
+                      <td className="px-1">
                         <button
                           onClick={() => toggleExpand(watch.id)}
-                          className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-600"
+                          className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-600"
                         >
                           {expanded[watch.id] ? (
                             <ChevronUpIcon className="h-4 w-4 text-gray-500 dark:text-gray-400" />
@@ -393,7 +400,7 @@ export default function Process() {
                           )}
                         </button>
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-2 py-3">
                         <div className="flex flex-wrap gap-1">
                           {watch.notes.length > 0 &&
                             getStatusBadge(
@@ -401,28 +408,34 @@ export default function Process() {
                             )}
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">
+                      <td className="px-2 py-3 text-sm font-medium text-gray-900 dark:text-white">
                         <div className="flex items-center gap-2">
                           <span>{watch.symbol}</span>
                           {watch.notes.length > 0 && (
-                            <span className="px-2 py-0.5 text-xs bg-gray-100 dark:bg-gray-700 rounded-full">
-                              {watch.notes.length}{" "}
-                              {isRTL
-                                ? watch.notes.length === 1
-                                  ? t("watch.noteCount").split("|")[0]
-                                  : t("watch.noteCount").split("|")[1]
-                                : t("watch.noteCount")}
+                            <span className="px-1.5 py-0.5 text-xs bg-gray-100 dark:bg-gray-700 rounded-full">
+                              {watch.notes.length}
                             </span>
                           )}
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
+                      <td className="px-2 py-3 text-sm text-gray-600 dark:text-gray-300">
+                        {watch.notes.length > 0 ? (
+                          <div className="truncate max-w-xl">
+                            {watch.notes[watch.notes.length - 1].content}
+                          </div>
+                        ) : (
+                          <span className="text-gray-400 dark:text-gray-500 italic text-sm">
+                            {t("watch.noNotes")}
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-2 py-3 text-sm text-gray-500 dark:text-gray-400">
                         {format(new Date(watch.lastUpdated), "MMM d, yyyy")}
                       </td>
-                      <td className="px-2">
+                      <td className="px-1">
                         <button
                           onClick={() => removeWatch(watch.id)}
-                          className="p-1.5 text-red-600 hover:bg-red-50 rounded-full"
+                          className="p-1 text-red-600 hover:bg-red-50 rounded-full"
                         >
                           <TrashIcon className="h-4 w-4" />
                         </button>
