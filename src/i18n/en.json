@@ -13,7 +13,8 @@
     "delete": "Delete",
     "newTrade": "New Trade",
     "addWatch": "Add Watch",
-    "addNote": "Add Note"
+    "addNote": "Add Note",
+    "addImage": "Add Image"
   },
   "trade": {
     "symbol": "Symbol",
@@ -27,10 +28,12 @@
     "addNote": "Add a note...",
     "noNotes": "No notes yet",
     "noTrades": "No trades yet",
+    "noClosedTrades": "No closed trades yet",
     "marketCondition": "Market Condition",
     "relativeStrength": "Relative Strength",
     "industryGroupRS": "Industry Group RS",
     "riskPerTrade": "Risk Per Trade",
+    "totalRiskUSD": "Total Risk USD",
     "setupType": "Setup Type",
     "entryTrigger": "Entry Trigger",
     "timeframe": "Timeframe",
@@ -44,7 +47,12 @@
     "setup": "Setup",
     "actions": "Actions",
     "openPositions": "Open Positions",
-    "closedPositions": "Closed Positions"
+    "closedPositions": "Closed Positions",
+    "lastAction": "Last Action",
+    "totalUSD": "Total USD",
+    "tradeActions": "Trade Actions",
+    "tradeNotes": "Trade Notes",
+    "target": "Target"
   },
   "status": {
     "open": "Open",
@@ -109,5 +117,22 @@
       "watching": "👀 Watching",
       "failed": "❌ Failed"
     }
+  },
+  "journal": {
+    "title": "Journal",
+    "newEntry": "New Entry",
+    "placeholder": "Write your thoughts for today...",
+    "save": "Save Entry",
+    "entries": "Journal Entries",
+    "noEntries": "No journal entries yet",
+    "today": "Today",
+    "addEmoji": "Add Emoji",
+    "deleteConfirm": "Are you sure you want to delete this entry?",
+    "delete": "Delete Entry"
+  },
+  "errors": {
+    "invalidImageType": "Please select a valid image file",
+    "imageTooLarge": "Image must be less than 5MB",
+    "unknown": "An unknown error occurred"
   }
 }

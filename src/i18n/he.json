@@ -13,7 +13,9 @@
     "delete": "מחק",
     "newTrade": "עסקה חדשה",
     "addWatch": "הוסף מעקב",
-    "addNote": "הוסף הערה"
+    "addNote": "הוסף הערה",
+    "addNewNote": "הוסף הערה",
+    "addImage": "הוסף תמונה"
   },
   "trade": {
     "symbol": "סימול",
@@ -45,10 +47,12 @@
     "unlockSharesHint": "שחרר לעריכה ידנית",
     "noNotes": "אין הערות עדיין",
     "noTrades": "אין עסקאות עדיין",
+    "noClosedTrades": "אין עסקאות סגורות עדיין",
     "marketCondition": "מצב שוק",
     "relativeStrength": "חוזק יחסי",
     "industryGroupRS": "חוזק יחסי ענפי",
     "riskPerTrade": "סיכון לעסקה",
+    "totalRiskUSD": "סיכון בדולרים",
     "setupType": "סוג התבנית",
     "entryTrigger": "טריגר לכניסה",
     "timeframe": "טווח זמן",
@@ -63,7 +67,11 @@
     "openPositions": "פוזיציות פתוחות",
     "closedPositions": "פוזיציות סגורות",
     "lastAction": "פעולה אחרונה",
-    "totalUSD": "סה״כ דולר"
+    "totalUSD": "סה״כ דולר",
+    "tradeActions": "פעולות בעסקה",
+    "tradeNotes": "הערות לעסקה",
+    "target": "יעד",
+    "addNote": "הוסף הערה"
   },
   "status": {
     "open": "פתוחה",
@@ -153,5 +161,22 @@
       "fri": "ו",
       "sat": "ש"
     }
+  },
+  "journal": {
+    "title": "יומן",
+    "newEntry": "רשומה חדשה",
+    "placeholder": "כתוב את המחשבות שלך להיום...",
+    "save": "שמור רשומה",
+    "entries": "רשומות יומן",
+    "noEntries": "אין רשומות יומן עדיין",
+    "today": "היום",
+    "addEmoji": "הוסף אימוג׳י",
+    "deleteConfirm": "האם אתה בטוח שברצונך למחוק רשומה זו?",
+    "delete": "מחק רשומה"
+  },
+  "errors": {
+    "invalidImageType": "אנא בחר קובץ תמונה תקין",
+    "imageTooLarge": "התמונה חייבת להיות קטנה מ-5MB",
+    "unknown": "אירעה שגיאה לא ידועה"
   }
 }

@@ -18,6 +18,7 @@ export interface TradeNote {
   id: string;
   text: string;
   date: string;
+  image?: string; // base64 encoded image
 }
 
 export interface Trade {
@@ -35,6 +36,49 @@ interface TradeData {
   setupType?: string;
 }
 
+// Image compression utilities
+const MAX_IMAGE_SIZE_MB = 5;
+const MAX_WIDTH = 1200;
+const COMPRESSION_QUALITY = 0.7;
+
+const compressImage = async (file: File): Promise<string | null> => {
+  if (file.size > MAX_IMAGE_SIZE_MB * 1024 * 1024) {
+    throw new Error(`Image size must be less than ${MAX_IMAGE_SIZE_MB}MB`);
+  }
+
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = (e) => {
+      const img = new Image();
+      img.src = e.target?.result as string;
+
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        let width = img.width;
+        let height = img.height;
+
+        if (width > MAX_WIDTH) {
+          height = (MAX_WIDTH * height) / width;
+          width = MAX_WIDTH;
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+
+        const ctx = canvas.getContext("2d");
+        ctx?.drawImage(img, 0, 0, width, height);
+
+        const compressedBase64 = canvas.toDataURL(
+          "image/jpeg",
+          COMPRESSION_QUALITY
+        );
+        resolve(compressedBase64);
+      };
+    };
+  });
+};
+
 interface TradeStore {
   trades: Trade[];
   addTrade: (trade: TradeData) => void;
@@ -46,7 +90,7 @@ interface TradeStore {
   ) => void;
   removeTrade: (id: string) => void;
   removeAction: (tradeId: string, actionId: string) => void;
-  addNote: (tradeId: string, text: string) => void;
+  addNote: (tradeId: string, text: string, image?: File) => Promise<void>;
   removeNote: (tradeId: string, noteId: string) => void;
 }
 
@@ -136,7 +180,17 @@ export const useTradeStore = create<TradeStore>()(
               : trade
           ),
         })),
-      addNote: (tradeId, text) =>
+      addNote: async (tradeId, text, image) => {
+        let compressedImage: string | null = null;
+        if (image) {
+          try {
+            compressedImage = await compressImage(image);
+          } catch (error) {
+            console.error("Failed to compress image:", error);
+            throw error;
+          }
+        }
+
         set((state) => ({
           trades: state.trades.map((trade) =>
             trade.id === tradeId
@@ -148,12 +202,14 @@ export const useTradeStore = create<TradeStore>()(
                       id: crypto.randomUUID(),
                       text,
                       date: new Date().toISOString(),
+                      ...(compressedImage && { image: compressedImage }),
                     },
                   ],
                 }
               : trade
           ),
-        })),
+        }));
+      },
       removeNote: (tradeId, noteId) =>
         set((state) => ({
           trades: state.trades.map((trade) =>

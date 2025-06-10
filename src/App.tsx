@@ -5,6 +5,7 @@ import Header from "./components/Header";
 import TradeList from "./components/TradeList";
 import Process from "./components/Process";
 import Reports from "./components/Reports";
+import Journal from "./components/Journal";
 import "./i18n/config";
 
 function TradeView() {
@@ -36,6 +37,7 @@ function App() {
           <Route path="/trades" element={<TradeView />} />
           <Route path="/process" element={<Process />} />
           <Route path="/reports" element={<Reports />} />
+          <Route path="/journal" element={<Journal />} />
         </Routes>
       </div>
     </BrowserRouter>

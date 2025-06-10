@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { format } from "date-fns";
+import { format, parseISO, startOfMonth } from "date-fns";
 import {
   useTradeStore,
-  type TradeAction,
   type Trade,
+  type TradeAction,
 } from "../store/tradeStore";
 import {
   TrashIcon,
@@ -12,14 +12,10 @@ import {
   ChevronUpIcon,
   PlusIcon,
   PencilIcon,
-  XMarkIcon,
 } from "@heroicons/react/24/outline";
 import AddActionModal from "./AddActionModal";
 import EditActionModal from "./EditActionModal";
 import AddNoteForm from "./AddNoteForm";
-import TradeDashboard from "./TradeDashboard";
-import GeneralSettings from "./GeneralSettings";
-import ClosedPositions from "./ClosedPositions";
 
 interface ExpandedState {
   [key: string]: boolean;
@@ -46,7 +42,6 @@ function TradeTable({
 }: TradeTableProps) {
   const { t } = useTranslation();
   const removeNote = useTradeStore((state) => state.removeNote);
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   const calculateTotalShares = (actions: TradeAction[] | undefined) => {
     if (!actions?.length) return 0;
@@ -91,41 +86,6 @@ function TradeTable({
     }, 0);
   };
 
-  const calculateRiskPercentage = (actions: TradeAction[] | undefined) => {
-    if (!actions?.length) return 0;
-    // Find the most recent buy action
-    const lastBuyAction = [...actions]
-      .reverse()
-      .find((action) => action.type === "buy");
-    if (!lastBuyAction || !lastBuyAction.stopLoss) return 0;
-
-    const riskPercentage =
-      ((lastBuyAction.price - lastBuyAction.stopLoss) / lastBuyAction.price) *
-      100;
-    return riskPercentage;
-  };
-
-  const calculateTotalRiskUSD = (actions: TradeAction[] | undefined) => {
-    if (!actions?.length) return 0;
-    const lastBuyAction = [...actions]
-      .reverse()
-      .find((action) => action.type === "buy");
-    if (!lastBuyAction || !lastBuyAction.stopLoss) return 0;
-
-    const riskPerShare = lastBuyAction.price - lastBuyAction.stopLoss;
-    return riskPerShare * lastBuyAction.quantity;
-  };
-
-  if (!trades.length) {
-    return (
-      <div className="text-center py-8 bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700">
-        <p className="text-gray-500 dark:text-gray-400">
-          {t("trade.noTrades")}
-        </p>
-      </div>
-    );
-  }
-
   return (
     <div className="overflow-hidden rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
       <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
@@ -147,14 +107,11 @@ function TradeTable({
             <th className="w-28 px-6 py-4 text-start text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
               {t("trade.avgPrice")}
             </th>
-            <th className="w-28 px-6 py-4 text-start text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
-              {t("trade.riskPerTrade")}
-            </th>
-            <th className="w-32 px-6 py-4 text-start text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
-              {t("trade.totalRiskUSD")}
-            </th>
             <th className="w-32 px-6 py-4 text-start text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
               {t("trade.totalUSD")}
+            </th>
+            <th className="w-32 px-6 py-4 text-start text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
+              {t("trade.pnl")}
             </th>
             <th className="w-24 px-6 py-4 text-start text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
               {t("trade.actions")}
@@ -165,13 +122,17 @@ function TradeTable({
           {trades.map((trade) => (
             <React.Fragment key={trade.id}>
               <tr
-                className={`transition-colors duration-150 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700`}
+                className={`transition-colors duration-150 ${
+                  calculatePnL(trade.actions) >= 0
+                    ? "bg-emerald-50 dark:bg-emerald-900/20 hover:bg-emerald-100 dark:hover:bg-emerald-900/30"
+                    : "bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30"
+                }`}
               >
                 <td className="px-2 py-4 w-10">
                   <button
                     onClick={() => toggleExpand(trade.id)}
                     className="p-1.5 rounded-full hover:bg-gray-500 dark:hover:bg-gray-700 dark:bg-gray-700 transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 focus:ring-opacity-50"
-                    title="Add action"
+                    title="Toggle details"
                   >
                     {expanded[trade.id] ? (
                       <ChevronUpIcon className="h-4 w-4 text-gray-600 dark:text-gray-300" />
@@ -184,25 +145,19 @@ function TradeTable({
                   {trade.symbol}
                 </td>
                 <td className="px-6 py-4 text-sm">
-                  {trade.isActive ? (
-                    <span className="px-2.5 py-0.5 inline-flex text-xs font-medium rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-200">
-                      {t("status.open")}
-                    </span>
-                  ) : (
-                    <span
-                      className={`px-2.5 py-0.5 inline-flex text-xs font-medium rounded-full ${
-                        calculatePnL(trade.actions) >= 0
-                          ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-200"
-                          : "bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-200"
-                      }`}
-                    >
-                      {t(
-                        calculatePnL(trade.actions) >= 0
-                          ? "status.win"
-                          : "status.loss"
-                      )}
-                    </span>
-                  )}
+                  <span
+                    className={`px-2.5 py-0.5 inline-flex text-xs font-medium rounded-full ${
+                      calculatePnL(trade.actions) >= 0
+                        ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-200"
+                        : "bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-200"
+                    }`}
+                  >
+                    {t(
+                      calculatePnL(trade.actions) >= 0
+                        ? "status.win"
+                        : "status.loss"
+                    )}
+                  </span>
                 </td>
                 <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-100">
                   {format(
@@ -216,54 +171,15 @@ function TradeTable({
                 <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-100">
                   ${calculateAveragePrice(trade.actions).toFixed(2)}
                 </td>
-                <td className="px-6 py-4 text-sm">
-                  {trade.isActive ? (
-                    <span
-                      className={`px-2.5 py-0.5 inline-flex text-xs font-medium rounded-full ${(() => {
-                        const risk = calculateRiskPercentage(trade.actions);
-                        if (risk === 0)
-                          return "bg-emerald-50 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-300";
-                        if (risk <= 2)
-                          return "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-200";
-                        if (risk <= 4)
-                          return "bg-emerald-200 text-emerald-900 dark:bg-emerald-900/70 dark:text-emerald-100";
-                        if (risk <= 6)
-                          return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-200";
-                        if (risk <= 8)
-                          return "bg-orange-100 text-orange-800 dark:bg-orange-900/50 dark:text-orange-200";
-                        return "bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-200";
-                      })()}`}
-                    >
-                      {calculateRiskPercentage(trade.actions).toFixed(1)}%
-                    </span>
-                  ) : (
-                    "-"
-                  )}
-                </td>
-                <td className="px-6 py-4 text-sm">
-                  {trade.isActive ? (
-                    <span
-                      className={`px-2.5 py-0.5 inline-flex text-xs font-medium rounded-full ${
-                        calculateTotalRiskUSD(trade.actions) > 0
-                          ? "bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-200"
-                          : "bg-gray-100 text-gray-800 dark:bg-gray-900/50 dark:text-gray-200"
-                      }`}
-                    >
-                      $
-                      {calculateTotalRiskUSD(trade.actions).toLocaleString(
-                        "en-US",
-                        {
-                          maximumFractionDigits: 0,
-                        }
-                      )}
-                    </span>
-                  ) : (
-                    "-"
-                  )}
-                </td>
                 <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-100">
                   $
                   {calculateTotalUSD(trade.actions).toLocaleString("en-US", {
+                    maximumFractionDigits: 0,
+                  })}
+                </td>
+                <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-100">
+                  $
+                  {calculatePnL(trade.actions).toLocaleString("en-US", {
                     maximumFractionDigits: 0,
                   })}
                 </td>
@@ -288,7 +204,7 @@ function TradeTable({
               </tr>
               {expanded[trade.id] && (
                 <tr className="bg-gray-50 dark:bg-gray-900 w-full">
-                  <td colSpan={11} className="px-6 py-6">
+                  <td colSpan={9} className="px-6 py-6">
                     <div className="space-y-8 w-full max-w-full">
                       <div className="w-full">
                         <div className="flex items-center space-x-2 text-xs font-medium text-gray-500 dark:text-gray-400 mb-4">
@@ -403,7 +319,7 @@ function TradeTable({
                         </div>
                         <div className="space-y-4 w-full">
                           {!trade.notes || trade.notes.length === 0 ? (
-                            <p className="text-sm text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
+                            <p className="text-sm text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700">
                               {t("trade.noNotes")}
                             </p>
                           ) : (
@@ -418,25 +334,10 @@ function TradeTable({
                                   key={note.id}
                                   className="flex items-start justify-between bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 w-full group hover:border-gray-300 dark:hover:border-gray-600 transition-colors duration-150"
                                 >
-                                  <div className="space-y-3 flex-1">
-                                    {note.text && (
-                                      <p className="text-sm text-gray-900 dark:text-gray-100">
-                                        {note.text}
-                                      </p>
-                                    )}
-                                    {note.image && (
-                                      <div className="relative">
-                                        <img
-                                          src={note.image}
-                                          alt="Note attachment"
-                                          className="max-h-48 w-auto object-contain rounded-lg cursor-zoom-in hover:opacity-90 transition-opacity"
-                                          onClick={() =>
-                                            note.image &&
-                                            setSelectedImage(note.image)
-                                          }
-                                        />
-                                      </div>
-                                    )}
+                                  <div className="space-y-2">
+                                    <p className="text-sm text-gray-900 dark:text-gray-100">
+                                      {note.text}
+                                    </p>
                                     <p className="text-xs text-gray-500 dark:text-gray-400">
                                       {format(
                                         new Date(note.date),
@@ -466,112 +367,227 @@ function TradeTable({
           ))}
         </tbody>
       </table>
-      {selectedImage && (
-        <ImageModal
-          src={selectedImage}
-          onClose={() => setSelectedImage(null)}
-        />
-      )}
     </div>
   );
 }
 
-function ImageModal({ src, onClose }: { src: string; onClose: () => void }) {
-  return (
-    <div
-      className="fixed inset-0 bg-black/80 flex items-center justify-center z-50"
-      onClick={onClose}
-    >
-      <div
-        className="relative max-w-7xl w-full max-h-[90vh] mx-4"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <img
-          src={src}
-          alt="Full size"
-          className="w-full h-full object-contain rounded-lg"
-        />
-        <button
-          onClick={onClose}
-          className="absolute -top-4 -right-4 p-2 bg-white dark:bg-gray-800 rounded-full text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 shadow-lg"
-        >
-          <XMarkIcon className="h-5 w-5" />
-        </button>
-      </div>
-    </div>
-  );
-}
-
-export default function TradeList() {
+export default function ClosedPositions() {
   const { t } = useTranslation();
   const { trades, removeTrade, removeAction } = useTradeStore();
   const [expanded, setExpanded] = useState<ExpandedState>({});
-  const [selectedTradeId, setSelectedTradeId] = useState<string | null>(null);
+  const [selectedTradeForNewAction, setSelectedTradeForNewAction] = useState<
+    string | null
+  >(null);
   const [selectedAction, setSelectedAction] = useState<{
     tradeId: string;
     action: TradeAction;
   } | null>(null);
-  const [isAddTradeModalOpen, setIsAddTradeModalOpen] = useState(false);
-  const [selectedTradeForNewAction, setSelectedTradeForNewAction] = useState<
-    string | null
-  >(null);
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+
+  const calculatePnL = (actions: TradeAction[] | undefined) => {
+    if (!actions?.length) return 0;
+    return actions.reduce((acc, action) => {
+      return (
+        acc +
+        (action.type === "sell"
+          ? action.price * action.quantity
+          : -action.price * action.quantity)
+      );
+    }, 0);
+  };
 
   const toggleExpand = (tradeId: string) => {
     setExpanded((prev) => ({ ...prev, [tradeId]: !prev[tradeId] }));
   };
 
-  const openTrades = trades.filter((trade) => trade.isActive);
+  // New helper functions for trade metrics
+  const calculateTradeMetrics = (trades: Trade[]) => {
+    const winningTrades = trades.filter(
+      (trade) => calculatePnL(trade.actions) > 0
+    );
+    const losingTrades = trades.filter(
+      (trade) => calculatePnL(trade.actions) <= 0
+    );
 
-  if (!trades.length) {
+    const winRate = (winningTrades.length / trades.length) * 100;
+    const totalPnL = trades.reduce(
+      (acc, trade) => acc + calculatePnL(trade.actions),
+      0
+    );
+
+    const avgGain =
+      winningTrades.length > 0
+        ? winningTrades.reduce(
+            (acc, trade) => acc + calculatePnL(trade.actions),
+            0
+          ) / winningTrades.length
+        : 0;
+
+    const avgLoss =
+      losingTrades.length > 0
+        ? Math.abs(
+            losingTrades.reduce(
+              (acc, trade) => acc + calculatePnL(trade.actions),
+              0
+            ) / losingTrades.length
+          )
+        : 0;
+
+    const calculateTradeDuration = (trade: Trade) => {
+      const firstAction = trade.actions[0];
+      const lastAction = trade.actions[trade.actions.length - 1];
+      return (
+        (new Date(lastAction.date).getTime() -
+          new Date(firstAction.date).getTime()) /
+        (1000 * 60 * 60 * 24)
+      );
+    };
+
+    const avgDaysWin =
+      winningTrades.length > 0
+        ? winningTrades.reduce(
+            (acc, trade) => acc + calculateTradeDuration(trade),
+            0
+          ) / winningTrades.length
+        : 0;
+
+    const avgDaysLoss =
+      losingTrades.length > 0
+        ? losingTrades.reduce(
+            (acc, trade) => acc + calculateTradeDuration(trade),
+            0
+          ) / losingTrades.length
+        : 0;
+
+    return {
+      winRate,
+      totalPnL,
+      avgGain,
+      avgLoss,
+      avgDaysWin,
+      avgDaysLoss,
+    };
+  };
+
+  const closedTrades = trades.filter((trade) => !trade.isActive);
+
+  // Group trades by month
+  const tradesByMonth = closedTrades.reduce<{ [key: string]: Trade[] }>(
+    (acc, trade) => {
+      const lastAction = trade.actions[trade.actions.length - 1];
+      const monthKey = format(
+        startOfMonth(parseISO(lastAction.date)),
+        "yyyy-MM"
+      );
+      if (!acc[monthKey]) {
+        acc[monthKey] = [];
+      }
+      acc[monthKey].push(trade);
+      return acc;
+    },
+    {}
+  );
+
+  // Sort months in descending order
+  const sortedMonths = Object.keys(tradesByMonth).sort((a, b) =>
+    b.localeCompare(a)
+  );
+
+  if (!closedTrades.length) {
     return (
-      <div className="space-y-8">
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
-            {t("app.title")}
-          </h1>
-          <GeneralSettings />
-        </div>
-        <TradeDashboard />
-        <div className="text-center py-12 bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700">
-          <p className="text-gray-500 dark:text-gray-400">
-            {t("trade.noTrades")}
-          </p>
-        </div>
+      <div className="text-center py-8 bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700">
+        <p className="text-gray-500 dark:text-gray-400">
+          {t("trade.noClosedTrades")}
+        </p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
-      <div className="mb-6 flex justify-center">
-        <GeneralSettings />
-      </div>
-      <TradeDashboard />
-
-      <div>
-        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-          {t("trade.openPositions")}
-        </h2>
-        <TradeTable
-          trades={openTrades}
-          expanded={expanded}
-          toggleExpand={toggleExpand}
-          onAddAction={setSelectedTradeForNewAction}
-          onEditAction={(tradeId, action) =>
-            setSelectedAction({ tradeId, action })
-          }
-          onRemoveTrade={removeTrade}
-          onRemoveAction={removeAction}
-        />
-      </div>
-
-      <div>
-        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-          {t("trade.closedPositions")}
-        </h2>
-        <ClosedPositions />
-      </div>
+    <div className="space-y-8">
+      {sortedMonths.map((month) => (
+        <div key={month}>
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+            {format(parseISO(`${month}-01`), "MMMM yyyy")}
+          </h2>
+          <div className="text-xs text-gray-600 dark:text-gray-400 mb-4 flex flex-wrap gap-x-6">
+            {(() => {
+              const metrics = calculateTradeMetrics(tradesByMonth[month]);
+              return (
+                <>
+                  <span>
+                    Win Rate:{" "}
+                    <span
+                      className={
+                        metrics.winRate >= 50
+                          ? "text-emerald-600 dark:text-emerald-400"
+                          : "text-red-600 dark:text-red-400"
+                      }
+                    >
+                      {metrics.winRate.toFixed(1)}%
+                    </span>
+                  </span>
+                  <span>
+                    P&L:{" "}
+                    <span
+                      className={
+                        metrics.totalPnL >= 0
+                          ? "text-emerald-600 dark:text-emerald-400"
+                          : "text-red-600 dark:text-red-400"
+                      }
+                    >
+                      {metrics.totalPnL >= 0 ? '+' : '-'}$
+                      {Math.abs(metrics.totalPnL).toLocaleString("en-US", {
+                        maximumFractionDigits: 0,
+                      })}
+                    </span>
+                  </span>
+                  <span>
+                    Avg Gain:{" "}
+                    <span className="text-emerald-600 dark:text-emerald-400">
+                      $
+                      {metrics.avgGain.toLocaleString("en-US", {
+                        maximumFractionDigits: 0,
+                      })}
+                    </span>
+                  </span>
+                  <span>
+                    Avg Loss:{" "}
+                    <span className="text-red-600 dark:text-red-400">
+                      $
+                      {metrics.avgLoss.toLocaleString("en-US", {
+                        maximumFractionDigits: 0,
+                      })}
+                    </span>
+                  </span>
+                  <span>
+                    Avg Days Win:{" "}
+                    <span className="text-emerald-600 dark:text-emerald-400">
+                      {metrics.avgDaysWin.toFixed(1)}
+                    </span>
+                  </span>
+                  <span>
+                    Avg Days Loss:{" "}
+                    <span className="text-red-600 dark:text-red-400">
+                      {metrics.avgDaysLoss.toFixed(1)}
+                    </span>
+                  </span>
+                </>
+              );
+            })()}
+          </div>
+          <TradeTable
+            trades={tradesByMonth[month]}
+            expanded={expanded}
+            toggleExpand={toggleExpand}
+            onAddAction={setSelectedTradeForNewAction}
+            onEditAction={(tradeId, action) =>
+              setSelectedAction({ tradeId, action })
+            }
+            onRemoveTrade={removeTrade}
+            onRemoveAction={removeAction}
+          />
+        </div>
+      ))}
 
       {selectedTradeForNewAction && (
         <AddActionModal
