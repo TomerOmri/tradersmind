@@ -1,0 +1,7 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+- Always think about translations [en.json](mdc:src/i18n/en.json) and [he.json](mdc:src/i18n/he.json), translate everything you implement
+- Always think about responsivness, everything should be mobile first and friendly

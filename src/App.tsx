@@ -6,6 +6,7 @@ import TradeList from "./components/TradeList";
 import Process from "./components/Process";
 import Reports from "./components/Reports";
 import Journal from "./components/Journal";
+import ProceduralMemory from "./components/ProceduralMemory";
 import "./i18n/config";
 
 function TradeView() {
@@ -38,6 +39,7 @@ function App() {
           <Route path="/process" element={<Process />} />
           <Route path="/reports" element={<Reports />} />
           <Route path="/journal" element={<Journal />} />
+          <Route path="/memory" element={<ProceduralMemory />} />
         </Routes>
       </div>
     </BrowserRouter>

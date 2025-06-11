@@ -1,13 +1,14 @@
 {
   "app": {
-    "title": "סווינג טריידר",
+    "title": "SwingTrader Mind",
     "direction": "rtl"
   },
   "header": {
     "trades": "עסקאות",
     "process": "תהליך",
     "reports": "דוחות",
-    "journal": "יומן"
+    "journal": "יומן",
+    "memory": "זיכרון תהליכי"
   },
   "actions": {
     "buy": "קנייה",
@@ -77,7 +78,11 @@
     "tradeActions": "פעולות בעסקה",
     "tradeNotes": "הערות לעסקה",
     "target": "יעד",
-    "addNote": "הוסף הערה"
+    "addNote": "הוסף הערה",
+    "tags": "תגיות",
+    "addTag": "הוסף תגית",
+    "newTag": "תגית חדשה...",
+    "tagUsage": "לקחים"
   },
   "status": {
     "open": "פתוחה",
@@ -95,7 +100,9 @@
     "save": "שמור הגדרות",
     "edit": "ערוך הגדרות",
     "percentageSymbol": "%",
-    "currencySymbol": "$"
+    "currencySymbol": "$",
+    "exportData": "ייצא נתונים",
+    "importData": "ייבא נתונים"
   },
   "setup": {
     "breakout": "פריצה",
@@ -184,5 +191,13 @@
     "invalidImageType": "אנא בחר קובץ תמונה תקין",
     "imageTooLarge": "התמונה חייבת להיות קטנה מ-5MB",
     "unknown": "אירעה שגיאה לא ידועה"
+  },
+  "memory": {
+    "addNew": "הוסף זיכרון חדש",
+    "description": "תיאור",
+    "save": "שמור זיכרון",
+    "filter": "סנן לפי תגיות",
+    "noMemories": "אין זכרונות עדיין",
+    "deleteConfirm": "האם אתה בטוח שברצונך למחוק זיכרון זה?"
   }
 }
