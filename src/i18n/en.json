@@ -150,10 +150,17 @@
   },
   "memory": {
     "addNew": "Add New Memory",
-    "description": "Description",
+    "description": "Add a description...",
     "save": "Save Memory",
     "filter": "Filter by Tags",
-    "noMemories": "No memories yet",
-    "deleteConfirm": "Are you sure you want to delete this memory?"
+    "noMemories": "No memories found",
+    "deleteConfirm": "Are you sure you want to delete this memory?",
+    "categories": "Memory Categories",
+    "stickyNotes": "Sticky Notes",
+    "addStickyNote": "Add a new note...",
+    "backToCategories": "Back to Categories",
+    "needImage": "Please add an image",
+    "needDescription": "Please add a description",
+    "needTag": "Please select at least one tag"
   }
 }

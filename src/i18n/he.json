@@ -194,10 +194,17 @@
   },
   "memory": {
     "addNew": "הוסף זיכרון חדש",
-    "description": "תיאור",
+    "description": "הוסף תיאור...",
     "save": "שמור זיכרון",
     "filter": "סנן לפי תגיות",
-    "noMemories": "אין זכרונות עדיין",
-    "deleteConfirm": "האם אתה בטוח שברצונך למחוק זיכרון זה?"
+    "noMemories": "לא נמצאו זכרונות",
+    "deleteConfirm": "האם אתה בטוח שברצונך למחוק זיכרון זה?",
+    "categories": "קטגוריות זיכרון",
+    "stickyNotes": "פתקים",
+    "addStickyNote": "הוסף פתק חדש...",
+    "backToCategories": "חזרה לקטגוריות",
+    "needImage": "אנא הוסף תמונה",
+    "needDescription": "אנא הוסף תיאור",
+    "needTag": "אנא בחר לפחות תגית אחת"
   }
 }

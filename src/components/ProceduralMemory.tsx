@@ -10,6 +10,7 @@ import {
 import { useMemoryStore } from "../store/memoryStore";
 import { format } from "date-fns";
 import { he, enUS } from "date-fns/locale";
+import { useNavigate } from "react-router-dom";
 
 interface TagCount {
   tag: string;
@@ -66,6 +67,7 @@ function DeleteConfirmationModal({
 
 export default function ProceduralMemory() {
   const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
   const { memories, addMemory, deleteMemory } = useMemoryStore();
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [availableTags, setAvailableTags] = useState<string[]>([]);
@@ -153,10 +155,6 @@ export default function ProceduralMemory() {
     }
   };
 
-  const handleTagSelect = (tag: string) => {
-    setSelectedTags(selectedTags.includes(tag) ? [] : [tag]);
-  };
-
   const handleSubmit = async () => {
     if (!previewUrl || !newText || selectedTags.length === 0) return;
 
@@ -210,6 +208,11 @@ export default function ProceduralMemory() {
     deleteMemory(deleteModal.memoryId);
   };
 
+  const handleTagClick = (tag: string) => {
+    const formattedTag = tag.toLowerCase().replace(/\s+/g, "_");
+    navigate(`/memory/${formattedTag}`);
+  };
+
   return (
     <>
       <div className="container mx-auto p-4">
@@ -253,7 +256,14 @@ export default function ProceduralMemory() {
                 {availableTags.map((tag) => (
                   <button
                     key={tag}
-                    onClick={() => handleTagSelect(tag)}
+                    onClick={() => {
+                      const isSelected = selectedTags.includes(tag);
+                      setSelectedTags(
+                        isSelected
+                          ? selectedTags.filter((t) => t !== tag)
+                          : [...selectedTags, tag]
+                      );
+                    }}
                     className={`px-2 py-0.5 rounded-full text-xs ${
                       selectedTags.includes(tag)
                         ? "bg-primary-500 text-white"
@@ -289,6 +299,15 @@ export default function ProceduralMemory() {
                 onClick={handleSubmit}
                 disabled={!previewUrl || !newText || selectedTags.length === 0}
                 className="w-full px-3 py-1.5 bg-primary-500 text-white rounded-md hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                title={
+                  !previewUrl
+                    ? t("memory.needImage")
+                    : !newText
+                    ? t("memory.needDescription")
+                    : selectedTags.length === 0
+                    ? t("memory.needTag")
+                    : ""
+                }
               >
                 {t("memory.save")}
               </button>
@@ -296,81 +315,24 @@ export default function ProceduralMemory() {
           </div>
         </div>
 
-        <div className="flex gap-4">
-          {/* Tag List */}
-          <div className="w-64 flex-shrink-0">
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
-              <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                {t("trade.tags")}
-              </h3>
-              <div className="space-y-1">
-                {tagCounts.map(({ tag, count }) => (
-                  <button
-                    key={tag}
-                    onClick={() => handleTagSelect(tag)}
-                    className={`w-full flex items-center justify-between px-3 py-1.5 rounded text-sm ${
-                      selectedTags.includes(tag)
-                        ? "bg-primary-500 text-white"
-                        : "hover:bg-gray-100 dark:hover:bg-gray-700"
-                    }`}
-                  >
-                    <span>{tag}</span>
-                    <span className="bg-gray-200 dark:bg-gray-600 px-1.5 py-0.5 rounded-full text-xs">
-                      {count}
-                    </span>
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Memory Grid */}
-          <div className="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredMemories.length === 0 ? (
-              <p className="text-gray-500 dark:text-gray-400 col-span-full text-center">
-                {t("memory.noMemories")}
-              </p>
-            ) : (
-              filteredMemories.map((memory) => (
-                <div
-                  key={memory.id}
-                  className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden"
-                >
-                  <div className="relative">
-                    <img
-                      src={memory.imageData}
-                      alt=""
-                      className="w-full h-40 object-cover cursor-pointer"
-                      onClick={() => handleImageClick(memory.imageData)}
-                    />
-                    <button
-                      onClick={() => handleDeleteClick(memory.id, memory.text)}
-                      className="absolute top-2 right-2 bg-red-500 rounded-full p-1.5 hover:bg-red-600 transition-colors"
-                    >
-                      <TrashIcon className="h-3.5 w-3.5 text-white" />
-                    </button>
-                  </div>
-                  <div className="p-3">
-                    <p className="text-gray-700 dark:text-gray-300 text-sm mb-2">
-                      {memory.text}
-                    </p>
-                    <div className="flex flex-wrap gap-1">
-                      {memory.tags.map((tag) => (
-                        <span
-                          key={tag}
-                          className="px-2 py-0.5 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full text-xs"
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                    <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
-                      {format(new Date(memory.createdAt), "PPP", { locale })}
-                    </div>
-                  </div>
-                </div>
-              ))
-            )}
+        {/* Tag Menu */}
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+          <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
+            {t("memory.categories")}
+          </h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+            {tagCounts.map(({ tag, count }) => (
+              <button
+                key={tag}
+                onClick={() => handleTagClick(tag)}
+                className="flex items-center justify-between px-4 py-2 bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg transition-colors"
+              >
+                <span className="text-gray-700 dark:text-gray-300">{tag}</span>
+                <span className="bg-primary-100 dark:bg-primary-900 text-primary-800 dark:text-primary-200 px-2 py-0.5 rounded-full text-xs">
+                  {count}
+                </span>
+              </button>
+            ))}
           </div>
         </div>
       </div>
