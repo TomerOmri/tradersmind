@@ -72,7 +72,7 @@ export default function TagManager({ tradeId }: TagManagerProps) {
             {tag.name}
             <button
               onClick={() => removeTradeTag(tradeId, tag.id)}
-              className="ms-2.5 p-0.5 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
+              className="ms-2.5 p-0.5 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors dark:bg-gray-800"
             >
               <XMarkIcon className="h-2.5 w-2.5" />
             </button>
@@ -108,7 +108,7 @@ export default function TagManager({ tradeId }: TagManagerProps) {
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             onClick={() => setIsAdding(true)}
-            className="p-1.5 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700/50 hover:text-gray-700 dark:hover:text-gray-200 transition-all backdrop-blur-sm"
+            className="p-1 rounded-md text-gray-900 dark:text-gray-200 hover:bg-gray-100/80 dark:hover:bg-gray-800/80 dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
             title={t("trade.addTag")}
           >
             <PlusIcon className="h-3.5 w-3.5" />
