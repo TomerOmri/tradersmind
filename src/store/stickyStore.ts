@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { ItemStorage } from "./localForageInstances";
 
 interface StickyNote {
   id: string;
@@ -11,9 +11,10 @@ interface StickyNote {
 
 type StickyStore = {
   notes: StickyNote[];
-  addNote: (tag: string, text: string) => void;
-  removeNote: (id: string) => void;
-  updateNote: (id: string, text: string) => void;
+  addNote: (tag: string, text: string) => Promise<void>;
+  removeNote: (id: string) => Promise<void>;
+  updateNote: (id: string, text: string) => Promise<void>;
+  loadNotes: () => Promise<void>;
 };
 
 const STICKY_COLORS = [
@@ -24,40 +25,59 @@ const STICKY_COLORS = [
   "bg-purple-100 dark:bg-purple-900",
 ];
 
-export const useStickyStore = create<StickyStore>()(
-  persist(
-    (set) => ({
-      notes: [],
-      addNote: (tag, text) =>
-        set((state) => ({
-          notes: [
-            ...state.notes,
-            {
-              id: crypto.randomUUID(),
-              text,
-              tag,
-              createdAt: new Date().toISOString(),
-              color:
-                STICKY_COLORS[Math.floor(Math.random() * STICKY_COLORS.length)],
-            },
-          ],
-        })),
-      removeNote: (id) =>
-        set((state) => ({
-          notes: state.notes.filter((note) => note.id !== id),
-        })),
-      updateNote: (id, text) =>
-        set((state) => ({
-          notes: state.notes.map((note) =>
-            note.id === id ? { ...note, text } : note
-          ),
-        })),
-    }),
-    {
-      name: "sticky-store",
-    }
-  )
-);
+// Create storage instance for sticky notes
+const stickyStorage = new ItemStorage<StickyNote>("sticky-store", "note");
+
+export const useStickyStore = create<StickyStore>((set, get) => ({
+  notes: [],
+
+  addNote: async (tag, text) => {
+    const newNote: StickyNote = {
+      id: crypto.randomUUID(),
+      text,
+      tag,
+      createdAt: new Date().toISOString(),
+      color: STICKY_COLORS[Math.floor(Math.random() * STICKY_COLORS.length)],
+    };
+
+    await stickyStorage.setItem(newNote.id, newNote);
+    set((state) => ({
+      notes: [...state.notes, newNote],
+    }));
+  },
+
+  removeNote: async (id) => {
+    await stickyStorage.removeItem(id);
+    set((state) => ({
+      notes: state.notes.filter((note) => note.id !== id),
+    }));
+  },
+
+  updateNote: async (id, text) => {
+    const state = get();
+    const existingNote = state.notes.find((note) => note.id === id);
+    if (!existingNote) return;
+
+    const updatedNote = { ...existingNote, text };
+    await stickyStorage.setItem(id, updatedNote);
+    set((state) => ({
+      notes: state.notes.map((note) => (note.id === id ? updatedNote : note)),
+    }));
+  },
+
+  loadNotes: async () => {
+    const notes = await stickyStorage.getAllItems();
+    // Sort by creation date, newest first
+    const sortedNotes = notes.sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
+    set({ notes: sortedNotes });
+  },
+}));
+
+// Load notes on store initialization
+useStickyStore.getState().loadNotes();
 
 // Export types
 export type { StickyNote };

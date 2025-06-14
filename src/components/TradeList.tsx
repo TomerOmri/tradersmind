@@ -548,9 +548,6 @@ export default function TradeList() {
     return (
       <div className="space-y-8">
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
-            {t("app.title")}
-          </h1>
           <GeneralSettings />
         </div>
         <TradeDashboard />

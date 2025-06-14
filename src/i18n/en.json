@@ -75,6 +75,8 @@
     "theme": "Theme",
     "dark": "Dark",
     "light": "Light",
+    "preferences": "Preferences",
+    "dataManagement": "Data Management",
     "general": "General Settings",
     "accountSize": "Trading Account Size",
     "riskPerTrade": "Risk Per Trade",
@@ -83,7 +85,9 @@
     "percentageSymbol": "%",
     "currencySymbol": "$",
     "exportData": "Export Data",
-    "importData": "Import Data"
+    "exportDescription": "Download backup of all your data",
+    "importData": "Import Data",
+    "importDescription": "Restore data from backup file"
   },
   "setup": {
     "breakout": "Breakout",

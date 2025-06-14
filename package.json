@@ -34,6 +34,7 @@
     "i18next": "^23.10.1",
     "i18next-browser-languagedetector": "^7.2.0",
     "idb-keyval": "^6.2.2",
+    "localforage": "^1.10.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-i18next": "^14.1.0",
@@ -44,6 +45,7 @@
   },
   "devDependencies": {
     "@tailwindcss/forms": "^0.5.10",
+    "@types/localforage": "^0.0.33",
     "@types/node": "^20.11.24",
     "@types/react": "^18.2.61",
     "@types/react-dom": "^18.2.19",

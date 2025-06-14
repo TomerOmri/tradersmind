@@ -94,6 +94,8 @@
     "theme": "ערכת נושא",
     "dark": "כהה",
     "light": "בהיר",
+    "preferences": "העדפות",
+    "dataManagement": "ניהול נתונים",
     "general": "הגדרות כלליות",
     "accountSize": "גודל חשבון",
     "riskPerTrade": "סיכון לעסקה",
@@ -102,7 +104,9 @@
     "percentageSymbol": "%",
     "currencySymbol": "$",
     "exportData": "ייצא נתונים",
-    "importData": "ייבא נתונים"
+    "exportDescription": "הורד גיבוי של כל הנתונים שלך",
+    "importData": "ייבא נתונים",
+    "importDescription": "שחזר נתונים מקובץ גיבוי"
   },
   "setup": {
     "breakout": "פריצה",

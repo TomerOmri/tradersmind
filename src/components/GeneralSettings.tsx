@@ -1,30 +1,68 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { ItemStorage } from "../store/localForageInstances";
 import { PencilIcon, CheckIcon } from "@heroicons/react/24/outline";
 import AddTradeButton from "./AddTradeButton";
+
+interface GeneralSettings {
+  accountSize: number;
+  riskPerTrade: number;
+}
 
 interface GeneralSettingsStore {
   accountSize: number;
   riskPerTrade: number;
-  setAccountSize: (size: number) => void;
-  setRiskPerTrade: (risk: number) => void;
+  setAccountSize: (size: number) => Promise<void>;
+  setRiskPerTrade: (risk: number) => Promise<void>;
+  loadSettings: () => Promise<void>;
 }
 
-export const useGeneralSettingsStore = create<GeneralSettingsStore>()(
-  persist(
-    (set) => ({
-      accountSize: 0,
-      riskPerTrade: 1,
-      setAccountSize: (size) => set({ accountSize: size }),
-      setRiskPerTrade: (risk) => set({ riskPerTrade: risk }),
-    }),
-    {
-      name: "general-settings",
-    }
-  )
+// Create storage instance for general settings
+const settingsStorage = new ItemStorage<GeneralSettings>(
+  "general-settings",
+  "config"
 );
+
+export const useGeneralSettingsStore = create<GeneralSettingsStore>(
+  (set, get) => ({
+    accountSize: 0,
+    riskPerTrade: 1,
+
+    setAccountSize: async (size) => {
+      const currentSettings = {
+        accountSize: get().accountSize,
+        riskPerTrade: get().riskPerTrade,
+      };
+      const updatedSettings = { ...currentSettings, accountSize: size };
+      await settingsStorage.setItem("settings", updatedSettings);
+      set({ accountSize: size });
+    },
+
+    setRiskPerTrade: async (risk) => {
+      const currentSettings = {
+        accountSize: get().accountSize,
+        riskPerTrade: get().riskPerTrade,
+      };
+      const updatedSettings = { ...currentSettings, riskPerTrade: risk };
+      await settingsStorage.setItem("settings", updatedSettings);
+      set({ riskPerTrade: risk });
+    },
+
+    loadSettings: async () => {
+      const settings = await settingsStorage.getItem("settings");
+      if (settings) {
+        set({
+          accountSize: settings.accountSize,
+          riskPerTrade: settings.riskPerTrade,
+        });
+      }
+    },
+  })
+);
+
+// Load settings on store initialization
+useGeneralSettingsStore.getState().loadSettings();
 
 function SettingItem({
   label,
@@ -96,11 +134,11 @@ export default function GeneralSettings() {
     riskPerTrade.toString()
   );
 
-  const handleSave = () => {
+  const handleSave = async () => {
     const newAccountSize = parseFloat(tempAccountSize) || 0;
     const newRiskPerTrade = parseFloat(tempRiskPerTrade) || 1;
-    setAccountSize(newAccountSize);
-    setRiskPerTrade(newRiskPerTrade);
+    await setAccountSize(newAccountSize);
+    await setRiskPerTrade(newRiskPerTrade);
     setIsEditing(false);
   };
 

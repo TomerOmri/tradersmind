@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { ItemStorage } from "./localForageInstances";
 
 export interface MemoryItem {
   id: string;
@@ -69,57 +69,67 @@ interface MemoryStore {
       imageUrl: string;
     }
   ) => Promise<void>;
-  deleteMemory: (id: string) => void;
-  updateMemory: (id: string, memory: Partial<MemoryItem>) => void;
+  deleteMemory: (id: string) => Promise<void>;
+  updateMemory: (id: string, memory: Partial<MemoryItem>) => Promise<void>;
+  loadMemories: () => Promise<void>;
 }
 
-export const useMemoryStore = create<MemoryStore>()(
-  persist(
-    (set) => ({
-      memories: [],
-      addMemory: async (memory) => {
-        try {
-          const compressedImage = await compressImage(memory.imageUrl);
+// Create storage instance for memories
+const memoryStorage = new ItemStorage<MemoryItem>("memory-store", "memory");
 
-          set((state) => ({
-            memories: [
-              ...state.memories,
-              {
-                ...memory,
-                id: crypto.randomUUID(),
-                imageData: compressedImage,
-                createdAt: new Date().toISOString(),
-              },
-            ],
-          }));
-        } catch (error) {
-          console.error("Failed to compress image:", error);
-          throw error;
-        }
-      },
-      deleteMemory: (id) =>
-        set((state) => ({
-          memories: state.memories.filter((m) => m.id !== id),
-        })),
-      updateMemory: (id, memory) =>
-        set((state) => ({
-          memories: state.memories.map((m) =>
-            m.id === id ? { ...m, ...memory } : m
-          ),
-        })),
-    }),
-    {
-      name: "memory-store",
-      // Add data validation/migration for future schema changes
-      version: 1,
-      onRehydrateStorage: () => {
-        return (state) => {
-          if (state) {
-            // Perform any necessary data migrations here
-            console.log("Memory store rehydrated");
-          }
-        };
-      },
+export const useMemoryStore = create<MemoryStore>((set, get) => ({
+  memories: [],
+
+  addMemory: async (memory) => {
+    try {
+      const compressedImage = await compressImage(memory.imageUrl);
+
+      const newMemory: MemoryItem = {
+        ...memory,
+        id: crypto.randomUUID(),
+        imageData: compressedImage,
+        createdAt: new Date().toISOString(),
+      };
+
+      await memoryStorage.setItem(newMemory.id, newMemory);
+      set((state) => ({
+        memories: [...state.memories, newMemory],
+      }));
+    } catch (error) {
+      console.error("Failed to compress image:", error);
+      throw error;
     }
-  )
-);
+  },
+
+  deleteMemory: async (id) => {
+    await memoryStorage.removeItem(id);
+    set((state) => ({
+      memories: state.memories.filter((m) => m.id !== id),
+    }));
+  },
+
+  updateMemory: async (id, memory) => {
+    const state = get();
+    const existingMemory = state.memories.find((m) => m.id === id);
+    if (!existingMemory) return;
+
+    const updatedMemory = { ...existingMemory, ...memory };
+    await memoryStorage.setItem(id, updatedMemory);
+    set((state) => ({
+      memories: state.memories.map((m) => (m.id === id ? updatedMemory : m)),
+    }));
+  },
+
+  loadMemories: async () => {
+    const memories = await memoryStorage.getAllItems();
+    // Sort by creation date, newest first
+    const sortedMemories = memories.sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
+    set({ memories: sortedMemories });
+  },
+}));
+
+// Load memories on store initialization
+useMemoryStore.getState().loadMemories();

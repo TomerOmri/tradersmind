@@ -57,7 +57,7 @@ function AddWatchModal({
           <div className="mb-4">
             <label
               htmlFor="symbol"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+              className="block text-sm font-medium text-gray-700 dark:text-white mb-1"
             >
               {t("watch.symbol")}
             </label>
@@ -238,7 +238,7 @@ function AddNoteModal({
           <div className="mb-4">
             <label
               htmlFor="content"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+              className="block text-sm font-medium text-gray-700 dark:text-white mb-1"
             >
               {t("watch.notes")}
             </label>

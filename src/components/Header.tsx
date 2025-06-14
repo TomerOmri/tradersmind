@@ -144,122 +144,183 @@ export default function Header() {
 
   const SettingsMenu = () => (
     <Menu as="div" className="relative">
-      <Menu.Button className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 dark:bg-gray-700 rounded-lg">
-        <Cog6ToothIcon className="h-5 w-5" />
+      <Menu.Button className="group relative p-2.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:bg-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-all duration-200 ease-in-out">
+        <Cog6ToothIcon className="h-5 w-5 group-hover:rotate-90 transition-transform duration-300" />
       </Menu.Button>
       <Transition
         as={Fragment}
-        enter="transition ease-out duration-100"
-        enterFrom="transform opacity-0 scale-95"
-        enterTo="transform opacity-100 scale-100"
-        leave="transition ease-in duration-75"
-        leaveFrom="transform opacity-100 scale-100"
-        leaveTo="transform opacity-0 scale-95"
+        enter="transition ease-out duration-200"
+        enterFrom="transform opacity-0 scale-95 translate-y-1"
+        enterTo="transform opacity-100 scale-100 translate-y-0"
+        leave="transition ease-in duration-150"
+        leaveFrom="transform opacity-100 scale-100 translate-y-0"
+        leaveTo="transform opacity-0 scale-95 translate-y-1"
       >
         <Menu.Items
-          className={`absolute mt-2 w-48 origin-top-right divide-y divide-gray-100 dark:divide-gray-600 rounded-md bg-white dark:bg-gray-800 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-50 ${
+          className={`absolute mt-3 w-56 origin-top divide-y divide-gray-100 dark:divide-gray-700 rounded-xl bg-white dark:bg-gray-800 shadow-xl ring-1 ring-black/5 dark:ring-white/10 focus:outline-none z-50 backdrop-blur-sm border border-gray-200 dark:border-gray-700 ${
             i18n.language === "he"
               ? "left-0 origin-top-left"
               : "right-0 origin-top-right"
-          } transform-gpu`}
+          }`}
         >
-          <div className="px-1 py-1">
-            <Menu.Item>
-              {({ active }) => (
-                <button
-                  onClick={toggleTheme}
-                  className={`${
-                    active
-                      ? "bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white"
-                      : "text-gray-700 dark:text-gray-300"
-                  } group flex w-full items-center rounded-md px-2 py-2 text-sm whitespace-nowrap ${
-                    i18n.language === "he" ? "flex-row-reverse" : ""
-                  }`}
-                >
-                  {theme === "dark" ? (
-                    <SunIcon
-                      className={`h-5 w-5 flex-shrink-0 ${
-                        i18n.language === "he" ? "ml-2" : "mr-2"
-                      }`}
-                    />
-                  ) : (
-                    <MoonIcon
-                      className={`h-5 w-5 flex-shrink-0 ${
-                        i18n.language === "he" ? "ml-2" : "mr-2"
-                      }`}
-                    />
-                  )}
-                  {t("settings.theme")} -{" "}
-                  {theme === "dark" ? t("settings.light") : t("settings.dark")}
-                </button>
-              )}
-            </Menu.Item>
-            <Menu.Item>
-              {({ active }) => (
-                <button
-                  onClick={toggleLanguage}
-                  className={`${
-                    active
-                      ? "bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white"
-                      : "text-gray-700 dark:text-gray-300"
-                  } group flex w-full items-center rounded-md px-2 py-2 text-sm whitespace-nowrap ${
-                    i18n.language === "he" ? "flex-row-reverse" : ""
-                  }`}
-                >
-                  <LanguageIcon
-                    className={`h-5 w-5 flex-shrink-0 ${
-                      i18n.language === "he" ? "ml-2" : "mr-2"
+          {/* Theme and Language Section */}
+          <div className="p-1.5">
+            <div className="px-2 py-1 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+              {t("settings.preferences")}
+            </div>
+            <div className="space-y-1 mt-1">
+              <Menu.Item>
+                {({ active }) => (
+                  <button
+                    onClick={toggleTheme}
+                    className={`${
+                      active
+                        ? "bg-gray-50 dark:bg-gray-700/70 text-gray-900 dark:text-gray-100"
+                        : "text-gray-700 dark:text-gray-300 dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50"
+                    } group flex w-full items-center rounded-lg px-2.5 py-2 text-sm font-medium transition-all duration-200 ${
+                      i18n.language === "he"
+                        ? "flex-row-reverse text-right"
+                        : ""
                     }`}
-                  />
-                  {t("settings.language")} -{" "}
-                  {i18n.language === "he" ? "English" : "עברית"}
-                </button>
-              )}
-            </Menu.Item>
+                  >
+                    <div
+                      className={`flex-shrink-0 p-1 rounded-md ${
+                        active
+                          ? "bg-gray-100 dark:bg-gray-600"
+                          : "bg-gray-100 dark:bg-gray-600"
+                      } ${i18n.language === "he" ? "ml-2.5" : "mr-2.5"}`}
+                    >
+                      {theme === "dark" ? (
+                        <SunIcon className="h-3.5 w-3.5 text-amber-500" />
+                      ) : (
+                        <MoonIcon className="h-3.5 w-3.5 text-indigo-500" />
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="font-medium text-sm">
+                        {t("settings.theme")}
+                      </div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 truncate">
+                        {theme === "dark"
+                          ? t("settings.light")
+                          : t("settings.dark")}
+                      </div>
+                    </div>
+                  </button>
+                )}
+              </Menu.Item>
+              <Menu.Item>
+                {({ active }) => (
+                  <button
+                    onClick={toggleLanguage}
+                    className={`${
+                      active
+                        ? "bg-gray-50 dark:bg-gray-700/70 text-gray-900 dark:text-gray-100"
+                        : "text-gray-700 dark:text-gray-300 dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50"
+                    } group flex w-full items-center rounded-lg px-2.5 py-2 text-sm font-medium transition-all duration-200 ${
+                      i18n.language === "he"
+                        ? "flex-row-reverse text-right"
+                        : ""
+                    }`}
+                  >
+                    <div
+                      className={`flex-shrink-0 p-1 rounded-md ${
+                        active
+                          ? "bg-gray-100 dark:bg-gray-600"
+                          : "bg-gray-100 dark:bg-gray-600"
+                      } ${i18n.language === "he" ? "ml-2.5" : "mr-2.5"}`}
+                    >
+                      <LanguageIcon className="h-3.5 w-3.5 text-blue-500" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="font-medium text-sm">
+                        {t("settings.language")}
+                      </div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 truncate">
+                        {i18n.language === "he" ? "English" : "עברית"}
+                      </div>
+                    </div>
+                  </button>
+                )}
+              </Menu.Item>
+            </div>
           </div>
-          <div className="px-1 py-1">
-            <Menu.Item>
-              {({ active }) => (
-                <button
-                  onClick={handleExport}
-                  className={`${
-                    active
-                      ? "bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white"
-                      : "text-gray-700 dark:text-gray-300"
-                  } group flex w-full items-center rounded-md px-2 py-2 text-sm whitespace-nowrap ${
-                    i18n.language === "he" ? "flex-row-reverse" : ""
-                  }`}
-                >
-                  <ArrowUpTrayIcon
-                    className={`h-5 w-5 flex-shrink-0 ${
-                      i18n.language === "he" ? "ml-2" : "mr-2"
+
+          {/* Data Management Section */}
+          <div className="p-1.5">
+            <div className="px-2 py-1 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+              {t("settings.dataManagement")}
+            </div>
+            <div className="space-y-1 mt-1">
+              <Menu.Item>
+                {({ active }) => (
+                  <button
+                    onClick={handleExport}
+                    className={`${
+                      active
+                        ? "bg-green-50 dark:bg-green-900/30 text-green-800 dark:text-green-200"
+                        : "text-gray-700 dark:text-gray-300 dark:bg-gray-700 hover:bg-green-50/50 dark:hover:bg-green-900/20"
+                    } group flex w-full items-center rounded-lg px-2.5 py-2 text-sm font-medium transition-all duration-200 ${
+                      i18n.language === "he"
+                        ? "flex-row-reverse text-right"
+                        : ""
                     }`}
-                  />
-                  {t("settings.exportData")}
-                </button>
-              )}
-            </Menu.Item>
-            <Menu.Item>
-              {({ active }) => (
-                <button
-                  onClick={handleImport}
-                  className={`${
-                    active
-                      ? "bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white"
-                      : "text-gray-700 dark:text-gray-300"
-                  } group flex w-full items-center rounded-md px-2 py-2 text-sm whitespace-nowrap ${
-                    i18n.language === "he" ? "flex-row-reverse" : ""
-                  }`}
-                >
-                  <ArrowDownTrayIcon
-                    className={`h-5 w-5 flex-shrink-0 ${
-                      i18n.language === "he" ? "ml-2" : "mr-2"
+                  >
+                    <div
+                      className={`flex-shrink-0 p-1 rounded-md ${
+                        active
+                          ? "bg-green-100 dark:bg-green-800/50"
+                          : "bg-gray-100 dark:bg-gray-600"
+                      } ${i18n.language === "he" ? "ml-2.5" : "mr-2.5"}`}
+                    >
+                      <ArrowUpTrayIcon className="h-3.5 w-3.5 text-green-500" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="font-medium text-sm">
+                        {t("settings.exportData")}
+                      </div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 truncate">
+                        {t("settings.exportDescription")}
+                      </div>
+                    </div>
+                  </button>
+                )}
+              </Menu.Item>
+              <Menu.Item>
+                {({ active }) => (
+                  <button
+                    onClick={handleImport}
+                    className={`${
+                      active
+                        ? "bg-blue-50 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200"
+                        : "text-gray-700 dark:text-gray-300 dark:bg-gray-700 hover:bg-blue-50/50 dark:hover:bg-blue-900/20"
+                    } group flex w-full items-center rounded-lg px-2.5 py-2 text-sm font-medium transition-all duration-200 ${
+                      i18n.language === "he"
+                        ? "flex-row-reverse text-right"
+                        : ""
                     }`}
-                  />
-                  {t("settings.importData")}
-                </button>
-              )}
-            </Menu.Item>
+                  >
+                    <div
+                      className={`flex-shrink-0 p-1 rounded-md ${
+                        active
+                          ? "bg-blue-100 dark:bg-blue-800/50"
+                          : "bg-gray-100 dark:bg-gray-600"
+                      } ${i18n.language === "he" ? "ml-2.5" : "mr-2.5"}`}
+                    >
+                      <ArrowDownTrayIcon className="h-3.5 w-3.5 text-blue-500" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="font-medium text-sm">
+                        {t("settings.importData")}
+                      </div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 truncate">
+                        {t("settings.importDescription")}
+                      </div>
+                    </div>
+                  </button>
+                )}
+              </Menu.Item>
+            </div>
           </div>
         </Menu.Items>
       </Transition>
@@ -284,7 +345,7 @@ export default function Header() {
             {/* Mobile Menu Button */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="md:hidden p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 dark:bg-gray-700 rounded-lg"
+              className="md:hidden p-2 text-gray-500 hover:text-gray-700 dark:text-gray-700 dark:hover:text-gray-200 dark:bg-gray-700 rounded-lg"
             >
               {isMobileMenuOpen ? (
                 <XMarkIcon className="h-6 w-6" />
