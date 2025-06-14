@@ -25,40 +25,40 @@ function MetricCard({
   trend,
 }: MetricCardProps) {
   return (
-    <div className="group relative flex items-center gap-2.5 p-2.5 rounded-lg transition-all duration-200 hover:bg-gray-50 dark:hover:bg-gray-800/50">
-      <div
-        className={`p-1.5 rounded-lg flex-shrink-0 transition-colors ${
-          trend === "up"
-            ? "bg-green-50/80 text-green-600 dark:bg-green-900/30 dark:text-green-400"
-            : trend === "down"
-            ? "bg-red-50/80 text-red-600 dark:bg-red-900/30 dark:text-red-400"
-            : "bg-gray-50/80 text-gray-600 dark:bg-gray-800/50 dark:text-gray-400"
-        } group-hover:bg-opacity-100`}
-      >
-        <Icon className="h-4 w-4" />
-      </div>
-      <div className="min-w-0 flex-1">
-        <p className="text-xs font-medium text-gray-500 dark:text-gray-400 truncate">
+    <div className="relative flex flex-col p-3 rounded-lg bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm transition-all duration-200 hover:bg-white/80 dark:hover:bg-gray-800/80">
+      <div className="flex items-center justify-between mb-2">
+        <span className="text-xs font-medium text-gray-500 dark:text-gray-400 truncate">
           {title}
-        </p>
-        <div className="flex items-baseline gap-1.5">
-          <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">
-            {value}
-          </p>
-          {change && (
-            <span
-              className={`text-xs font-medium truncate ${
-                trend === "up"
-                  ? "text-green-600 dark:text-green-400"
-                  : trend === "down"
-                  ? "text-red-600 dark:text-red-400"
-                  : "text-gray-500 dark:text-gray-400"
-              }`}
-            >
-              {change}
-            </span>
-          )}
+        </span>
+        <div
+          className={`p-1.5 rounded-lg transition-colors ${
+            trend === "up"
+              ? "bg-green-50/50 text-green-600 dark:bg-green-900/30 dark:text-green-400"
+              : trend === "down"
+              ? "bg-red-50/50 text-red-600 dark:bg-red-900/30 dark:text-red-400"
+              : "bg-gray-50/50 text-gray-600 dark:bg-gray-800/50 dark:text-gray-400"
+          }`}
+        >
+          <Icon className="h-3.5 w-3.5" />
         </div>
+      </div>
+      <div className="flex items-baseline gap-1">
+        <p className="text-base font-bold text-gray-900 dark:text-white truncate">
+          {value}
+        </p>
+        {change && (
+          <span
+            className={`text-xs font-semibold truncate ${
+              trend === "up"
+                ? "text-green-600 dark:text-green-400"
+                : trend === "down"
+                ? "text-red-600 dark:text-red-400"
+                : "text-gray-500 dark:text-gray-400"
+            }`}
+          >
+            {change}
+          </span>
+        )}
       </div>
     </div>
   );
@@ -118,13 +118,8 @@ export default function TradeDashboard() {
   const metrics = calculateOpenPositionsMetrics(trades);
 
   return (
-    <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm divide-y divide-gray-100 dark:divide-gray-700">
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 divide-y divide-x sm:divide-y-0 rtl:divide-x-reverse divide-gray-100 dark:divide-gray-700">
-        <MetricCard
-          title={t("dashboard.activePositions")}
-          value={metrics.activePositions}
-          icon={CircleStackIcon}
-        />
+    <div className="bg-gray-50/30 dark:bg-gray-900/30 backdrop-blur-sm rounded-xl p-3 sm:p-4">
+      <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3">
         <MetricCard
           title={t("dashboard.totalInMarket")}
           value={`$${metrics.totalInMarket.toLocaleString("en-US", {
