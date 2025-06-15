@@ -133,27 +133,29 @@ export default function AddTradeModal({
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 overflow-y-auto">
       <div
-        className={`bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-2xl border border-gray-200 dark:border-gray-700 my-auto ${
+        className={`bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-2xl border border-gray-200 dark:border-gray-700 my-auto transform transition-all ${
           isRTL ? "rtl" : "ltr"
         }`}
       >
         {/* Fixed Header */}
-        <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+        <div className="p-6 border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center justify-between">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-              {t("trade.newTrade")}
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+              {formData.isBuy
+                ? t("trade.newBuyTrade")
+                : t("trade.newSellTrade")}
             </h2>
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 transition-colors"
+              className="p-2 text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 transition-colors hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl"
             >
-              <XMarkIcon className="h-6 w-6" />
+              <XMarkIcon className="h-5 w-5" />
             </button>
           </div>
         </div>
 
         {/* Scrollable Content */}
-        <div className="p-4 max-h-[calc(100vh-16rem)] overflow-y-auto">
+        <div className="p-6 max-h-[calc(100vh-16rem)] overflow-y-auto">
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Symbol and Date */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -175,7 +177,7 @@ export default function AddTradeModal({
                     errors.ticker
                       ? "border-red-300 focus:ring-red-500"
                       : "border-gray-300 dark:border-gray-600 focus:ring-primary-500"
-                  } dark:bg-gray-700/50 text-base font-medium`}
+                  } dark:bg-gray-700 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 text-base font-medium`}
                   dir="ltr"
                 />
                 {errors.ticker && (
@@ -184,7 +186,7 @@ export default function AddTradeModal({
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-sm font-medium text-gray-200 dark:text-gray-300 mb-1">
                   {t("trade.date")}
                 </label>
                 <div className="relative">
@@ -203,7 +205,7 @@ export default function AddTradeModal({
                     }
                     className={`w-full ${
                       isRTL ? "pr-10 pl-3" : "pl-10 pr-3"
-                    } py-2 border rounded-xl focus:outline-none focus:ring-2 ${
+                    } py-2 dark:text-gray-300 border rounded-xl focus:outline-none focus:ring-2 ${
                       errors.date
                         ? "border-red-300 focus:ring-red-500"
                         : "border-gray-300 dark:border-gray-600 focus:ring-primary-500"
@@ -256,17 +258,14 @@ export default function AddTradeModal({
                 {
                   key: "entryPrice" as const,
                   label: "trade.price",
-                  placeholder: "trade.entryPricePlaceholder",
                 },
                 {
                   key: "stopLoss" as const,
                   label: "trade.stopLoss",
-                  placeholder: "trade.stopLossPlaceholder",
                 },
                 {
                   key: "profitTarget" as const,
                   label: "trade.profitTarget",
-                  placeholder: "trade.profitTargetPlaceholder",
                 },
               ].map((field) => (
                 <div key={field.key}>
@@ -300,7 +299,7 @@ export default function AddTradeModal({
                         errors[field.key]
                           ? "border-red-300 focus:ring-red-500"
                           : "border-gray-300 dark:border-gray-600 focus:ring-primary-500"
-                      } dark:bg-gray-700/50`}
+                      } dark:bg-gray-700 dark:text-gray-300 dark:text-white placeholder-gray-400 dark:placeholder-gray-500`}
                       dir="ltr"
                     />
                   </div>
@@ -324,7 +323,7 @@ export default function AddTradeModal({
                   onChange={(e) =>
                     setFormData({ ...formData, setupType: e.target.value })
                   }
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700/50"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-gray-700 dark:text-white"
                 >
                   <option value="">{t("trade.selectSetup")}</option>
                   <option value="breakout">{t("setup.breakout")}</option>
@@ -351,7 +350,7 @@ export default function AddTradeModal({
                   className={`w-full px-3 py-2 border rounded-xl focus:outline-none focus:ring-2  bg-white dark:bg-gray-700/50 ${
                     errors.shares
                       ? "border-red-300 focus:ring-red-500"
-                      : "border-gray-300 dark:border-gray-600 focus:ring-primary-500"
+                      : "border-gray-300 dark:border-gray-600 dark:text-gray-300 focus:ring-primary-500"
                   } font-medium`}
                   dir="ltr"
                 />
@@ -515,18 +514,18 @@ export default function AddTradeModal({
         </div>
 
         {/* Fixed Footer */}
-        <div className="p-4 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+        <div className="p-6 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
           <div className="flex justify-end gap-3">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors duration-150"
+              className="px-6 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-xl transition-colors duration-150"
             >
               {t("actions.cancel")}
             </button>
             <button
               onClick={handleSubmit}
-              className="px-4 py-2 text-sm font-medium text-white bg-[#feb062] hover:bg-[#fea042] rounded-xl transition-colors duration-150"
+              className="px-6 py-2.5 text-sm font-medium text-white bg-[#feb062] hover:bg-[#fea042] dark:bg-[#e99c52] dark:hover:bg-[#d98c42] rounded-xl transition-colors duration-150"
             >
               {t("actions.save")}
             </button>

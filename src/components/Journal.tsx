@@ -40,10 +40,10 @@ const MenuBar = ({ editor }: { editor: any }) => {
   ];
 
   return (
-    <div className="border-b dark:border-gray-700 p-2 mb-4 flex flex-wrap gap-2 items-center bg-white dark:bg-gray-800 rounded-t-lg">
+    <div className="border-b dark:border-gray-700 p-1.5 mb-2 flex flex-wrap gap-1.5 items-center bg-white dark:bg-gray-800 rounded-t-lg">
       <button
         onClick={() => editor.chain().focus().toggleBold().run()}
-        className={`p-2 rounded ${
+        className={`p-1.5 rounded text-gray-700 dark:bg-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 ${
           editor.isActive("bold") ? "bg-gray-200 dark:bg-gray-700" : ""
         }`}
       >
@@ -51,7 +51,7 @@ const MenuBar = ({ editor }: { editor: any }) => {
       </button>
       <button
         onClick={() => editor.chain().focus().toggleItalic().run()}
-        className={`p-2 rounded ${
+        className={`p-1.5 rounded text-gray-700 dark:bg-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 ${
           editor.isActive("italic") ? "bg-gray-200 dark:bg-gray-700" : ""
         }`}
       >
@@ -59,18 +59,18 @@ const MenuBar = ({ editor }: { editor: any }) => {
       </button>
       <button
         onClick={() => editor.chain().focus().toggleUnderline().run()}
-        className={`p-2 rounded ${
+        className={`p-1.5 rounded text-gray-700 dark:bg-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 ${
           editor.isActive("underline") ? "bg-gray-200 dark:bg-gray-700" : ""
         }`}
       >
         <span className="underline">U</span>
       </button>
 
-      <div className="h-6 w-px bg-gray-300 dark:bg-gray-600 mx-1" />
+      <div className="h-5 w-px bg-gray-300 dark:bg-gray-600 mx-0.5" />
 
       <button
         onClick={() => editor.chain().focus().setTextAlign("left").run()}
-        className={`p-2 rounded ${
+        className={`p-1.5 rounded text-gray-700 dark:bg-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 ${
           editor.isActive({ textAlign: "left" })
             ? "bg-gray-200 dark:bg-gray-700"
             : ""
@@ -80,7 +80,7 @@ const MenuBar = ({ editor }: { editor: any }) => {
       </button>
       <button
         onClick={() => editor.chain().focus().setTextAlign("center").run()}
-        className={`p-2 rounded ${
+        className={`p-1.5 rounded text-gray-700 dark:bg-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 ${
           editor.isActive({ textAlign: "center" })
             ? "bg-gray-200 dark:bg-gray-700"
             : ""
@@ -90,7 +90,7 @@ const MenuBar = ({ editor }: { editor: any }) => {
       </button>
       <button
         onClick={() => editor.chain().focus().setTextAlign("right").run()}
-        className={`p-2 rounded ${
+        className={`p-1.5 rounded text-gray-700 dark:bg-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 ${
           editor.isActive({ textAlign: "right" })
             ? "bg-gray-200 dark:bg-gray-700"
             : ""
@@ -99,17 +99,17 @@ const MenuBar = ({ editor }: { editor: any }) => {
         →
       </button>
 
-      <div className="h-6 w-px bg-gray-300 dark:bg-gray-600 mx-1" />
+      <div className="h-5 w-px bg-gray-300 dark:bg-gray-600 mx-0.5" />
 
       <div className="relative">
         <button
           onClick={() => setShowColorPicker(!showColorPicker)}
-          className="p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700"
+          className="p-1.5 rounded text-gray-700 dark:bg-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
         >
           🎨
         </button>
         {showColorPicker && (
-          <div className="absolute top-full left-0 mt-1 p-2 bg-white dark:bg-gray-800 rounded shadow-lg z-10 grid grid-cols-5 gap-1">
+          <div className="absolute top-full dark:bg-gray-700 left-0 mt-1 p-1.5 bg-white dark:bg-gray-800 rounded shadow-lg z-10 grid grid-cols-5 gap-1">
             {colors.map((color) => (
               <button
                 key={color}
@@ -117,7 +117,7 @@ const MenuBar = ({ editor }: { editor: any }) => {
                   editor.chain().focus().setColor(color).run();
                   setShowColorPicker(false);
                 }}
-                className="w-6 h-6 rounded"
+                className="w-5 h-5 rounded"
                 style={{ backgroundColor: color, border: "1px solid gray" }}
               />
             ))}
@@ -128,7 +128,7 @@ const MenuBar = ({ editor }: { editor: any }) => {
       <div className="relative">
         <button
           onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-          className="p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700"
+          className="p-1.5 rounded text-gray-700 dark:bg-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
         >
           😊
         </button>
@@ -209,7 +209,7 @@ export default function Journal() {
           }
         `}
       </style>
-      <div className="mb-8">
+      <div className="mb-6">
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg">
           <MenuBar editor={editor} />
           <div
@@ -219,10 +219,10 @@ export default function Journal() {
           >
             <EditorContent editor={editor} />
           </div>
-          <div className="p-4 border-t dark:border-gray-700">
+          <div className="px-4 py-2 border-t dark:border-gray-700">
             <button
               onClick={saveEntry}
-              className="px-4 py-2 text-sm font-medium text-white bg-primary-600 rounded-md hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-400"
+              className="px-3 py-1.5 text-sm font-medium text-white bg-primary-600 rounded-md hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-400 transition-colors"
             >
               {t("journal.save")}
             </button>
@@ -230,33 +230,33 @@ export default function Journal() {
         </div>
       </div>
 
-      <div className="space-y-6">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+      <div className="space-y-4">
+        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
           {t("journal.entries")}
         </h2>
 
         {entries.length === 0 ? (
-          <p className="text-gray-500 dark:text-gray-400">
+          <p className="text-gray-500 dark:text-gray-400 text-sm">
             {t("journal.noEntries")}
           </p>
         ) : (
           entries.map((entry) => (
             <div
               key={entry.id}
-              className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6"
+              className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4"
             >
-              <div className="flex justify-between items-center mb-4">
-                <span className="text-sm text-gray-500 dark:text-gray-400">
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-xs text-gray-500 dark:text-gray-400">
                   {format(new Date(entry.date), "PPP")}
                 </span>
                 <button
                   onClick={() => handleDelete(entry.id)}
-                  className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
+                  className="text-gray-400 hover:text-red-500 dark:text-gray-500 dark:hover:text-red-400 transition-colors"
                   title={t("journal.delete")}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5"
+                    className="h-4 w-4"
                     viewBox="0 0 20 20"
                     fill="currentColor"
                   >
@@ -269,7 +269,7 @@ export default function Journal() {
                 </button>
               </div>
               <div
-                className="prose dark:prose-invert max-w-none"
+                className="prose dark:prose-invert prose-sm max-w-none"
                 dangerouslySetInnerHTML={{ __html: entry.content }}
                 dir={i18n.dir()}
               />

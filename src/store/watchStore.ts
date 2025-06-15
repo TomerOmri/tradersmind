@@ -139,6 +139,7 @@ export const useWatchStore = create<WatchStore>((set, get) => ({
     const updatedWatch = {
       ...watch,
       notes: watch.notes.filter((note) => note.id !== noteId),
+      lastUpdated: new Date().toISOString(),
     };
 
     await watchStorage.setItem(watchId, updatedWatch);

@@ -18,10 +18,18 @@ export default function AddActionModal({
     state.trades.find((t) => t.id === tradeId)
   );
 
+  // Calculate total shares held
+  const calculateTotalShares = () => {
+    if (!trade?.actions?.length) return 0;
+    return trade.actions.reduce((acc, action) => {
+      return acc + (action.type === "buy" ? action.quantity : -action.quantity);
+    }, 0);
+  };
+
   const [formData, setFormData] = useState({
-    type: "buy" as TradeType,
+    type: "sell" as TradeType,
     price: "",
-    quantity: "",
+    quantity: calculateTotalShares().toString(),
     date: new Date().toISOString().slice(0, 16),
     stopLoss: "",
     targetPrice: "",
@@ -76,12 +84,28 @@ export default function AddActionModal({
               <select
                 name="type"
                 id="type"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white sm:text-sm"
+                className={`mt-1 block w-full rounded-md shadow-sm focus:ring-2 focus:ring-opacity-50 sm:text-sm
+                  ${
+                    formData.type === "buy"
+                      ? "border-emerald-300 focus:border-emerald-500 focus:ring-emerald-500 dark:border-emerald-600 text-emerald-700 dark:text-emerald-400"
+                      : "border-red-300 focus:border-red-500 focus:ring-red-500 dark:border-red-600 text-red-700 dark:text-red-400"
+                  } 
+                  dark:bg-gray-700`}
                 value={formData.type}
                 onChange={handleChange}
               >
-                <option value="buy">{t("actions.buy")}</option>
-                <option value="sell">{t("actions.sell")}</option>
+                <option
+                  value="buy"
+                  className="text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30"
+                >
+                  {t("actions.buy")}
+                </option>
+                <option
+                  value="sell"
+                  className="text-red-700 dark:text-red-400 bg-red-50 dark:bg-red-900/30"
+                >
+                  {t("actions.sell")}
+                </option>
               </select>
             </div>
 
@@ -148,25 +172,6 @@ export default function AddActionModal({
 
             <div>
               <label
-                htmlFor="targetPrice"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-              >
-                {t("trade.targetPrice")}
-              </label>
-              <input
-                type="number"
-                name="targetPrice"
-                id="targetPrice"
-                min="0"
-                step="0.01"
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white sm:text-sm"
-                value={formData.targetPrice}
-                onChange={handleChange}
-              />
-            </div>
-
-            <div>
-              <label
                 htmlFor="notes"
                 className="block text-sm font-medium text-gray-700 dark:text-gray-300"
               >
@@ -182,7 +187,7 @@ export default function AddActionModal({
               />
             </div>
 
-            <div className="flex justify-end space-x-3">
+            <div className="flex justify-end space-x-3 rtl:space-x-reverse">
               <button
                 type="button"
                 onClick={onClose}

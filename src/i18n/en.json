@@ -18,12 +18,15 @@
     "save": "Save",
     "cancel": "Cancel",
     "delete": "Delete",
+    "restore": "Restore",
     "newTrade": "New Trade",
     "addWatch": "Add Watch",
     "addNote": "Add Note",
     "addImage": "Add Image"
   },
   "trade": {
+    "newBuyTrade": "New Buy Trade",
+    "newSellTrade": "New Sell Trade",
     "symbol": "Symbol",
     "type": "Type",
     "price": "Price",

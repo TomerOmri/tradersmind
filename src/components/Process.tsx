@@ -1,4 +1,5 @@
 import { useState } from "react";
+import React from "react";
 import { format } from "date-fns";
 import {
   ChevronDownIcon,
@@ -6,6 +7,7 @@ import {
   PlusIcon,
   TrashIcon,
   PencilIcon,
+  ArrowUturnLeftIcon,
 } from "@heroicons/react/24/outline";
 import { useTranslation } from "react-i18next";
 import {
@@ -66,7 +68,7 @@ function AddWatchModal({
               id="symbol"
               value={symbol}
               onChange={(e) => setSymbol(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:text-white rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700"
               placeholder="AAPL"
             />
           </div>
@@ -81,7 +83,7 @@ function AddWatchModal({
                 className={`px-3 py-1.5 rounded-full text-sm ${
                   statuses.includes("SETUP_SUCCESS")
                     ? "bg-green-100 text-green-800"
-                    : "bg-gray-100 text-gray-800"
+                    : "bg-gray-100 text-gray-800 dark:text-gray-300 dark:bg-gray-700"
                 }`}
               >
                 {t("watch.statuses.setupSuccess")}
@@ -92,7 +94,7 @@ function AddWatchModal({
                 className={`px-3 py-1.5 rounded-full text-sm ${
                   statuses.includes("TIP")
                     ? "bg-blue-100 text-blue-800"
-                    : "bg-gray-100 text-gray-800"
+                    : "bg-gray-100 text-gray-800 dark:text-gray-300 dark:bg-gray-700"
                 }`}
               >
                 {t("watch.statuses.tip")}
@@ -103,7 +105,7 @@ function AddWatchModal({
                 className={`px-3 py-1.5 rounded-full text-sm ${
                   statuses.includes("WATCHING")
                     ? "bg-yellow-100 text-yellow-800"
-                    : "bg-gray-100 text-gray-800"
+                    : "bg-gray-100 text-gray-800 dark:text-gray-300 dark:bg-gray-700"
                 }`}
               >
                 {t("watch.statuses.watching")}
@@ -114,7 +116,7 @@ function AddWatchModal({
                 className={`px-3 py-1.5 rounded-full text-sm ${
                   statuses.includes("FAILED")
                     ? "bg-red-100 text-red-800"
-                    : "bg-gray-100 text-gray-800"
+                    : "bg-gray-100 text-gray-800 dark:text-gray-300 dark:bg-gray-700"
                 }`}
               >
                 {t("watch.statuses.failed")}
@@ -178,11 +180,17 @@ function AddNoteModal({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center">
-      <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-md">
-        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
-          {noteToEdit ? t("actions.edit") : t("actions.addNote")}
-        </h2>
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+      <div className="bg-white dark:bg-gray-800 rounded-xl p-6 w-full max-w-md shadow-xl transform transition-all">
+        <div
+          className={`flex items-center justify-between mb-6 ${
+            isRTL ? "flex-row-reverse" : ""
+          }`}
+        >
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+            {noteToEdit ? t("actions.edit") : t("actions.addNote")}
+          </h2>
+        </div>
         <form onSubmit={handleSubmit} className={isRTL ? "rtl" : "ltr"}>
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -192,10 +200,10 @@ function AddNoteModal({
               <button
                 type="button"
                 onClick={() => setStatus("SETUP_SUCCESS")}
-                className={`px-3 py-1.5 text-sm ${
+                className={`px-3 py-1.5 rounded-full text-sm transition-colors ${
                   status === "SETUP_SUCCESS"
-                    ? "text-green-600 dark:text-green-400 font-medium"
-                    : "text-gray-500 dark:text-gray-400"
+                    ? "bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-300"
+                    : "bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300"
                 }`}
               >
                 {t("watch.statuses.setupSuccess")}
@@ -203,10 +211,10 @@ function AddNoteModal({
               <button
                 type="button"
                 onClick={() => setStatus("TIP")}
-                className={`px-3 py-1.5 text-sm ${
+                className={`px-3 py-1.5 rounded-full text-sm transition-colors ${
                   status === "TIP"
-                    ? "text-blue-600 dark:text-blue-400 font-medium"
-                    : "text-gray-500 dark:text-gray-400"
+                    ? "bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-300"
+                    : "bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300"
                 }`}
               >
                 {t("watch.statuses.tip")}
@@ -214,10 +222,10 @@ function AddNoteModal({
               <button
                 type="button"
                 onClick={() => setStatus("WATCHING")}
-                className={`px-3 py-1.5 text-sm ${
+                className={`px-3 py-1.5 rounded-full text-sm transition-colors ${
                   status === "WATCHING"
-                    ? "text-yellow-600 dark:text-yellow-400 font-medium"
-                    : "text-gray-500 dark:text-gray-400"
+                    ? "bg-yellow-100 dark:bg-yellow-900/50 text-yellow-800 dark:text-yellow-300"
+                    : "bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300"
                 }`}
               >
                 {t("watch.statuses.watching")}
@@ -225,20 +233,20 @@ function AddNoteModal({
               <button
                 type="button"
                 onClick={() => setStatus("FAILED")}
-                className={`px-3 py-1.5 text-sm ${
+                className={`px-3 py-1.5 rounded-full text-sm transition-colors ${
                   status === "FAILED"
-                    ? "text-red-600 dark:text-red-400 font-medium"
-                    : "text-gray-500 dark:text-gray-400"
+                    ? "bg-red-100 dark:bg-red-900/50 text-red-800 dark:text-red-300"
+                    : "bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300"
                 }`}
               >
                 {t("watch.statuses.failed")}
               </button>
             </div>
           </div>
-          <div className="mb-4">
+          <div className="mb-6">
             <label
               htmlFor="content"
-              className="block text-sm font-medium text-gray-700 dark:text-white mb-1"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
             >
               {t("watch.notes")}
             </label>
@@ -246,7 +254,7 @@ function AddNoteModal({
               id="content"
               value={content}
               onChange={(e) => setContent(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700"
+              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
               rows={4}
               placeholder={t("trade.addNote")}
             />
@@ -259,13 +267,13 @@ function AddNoteModal({
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+              className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
             >
               {t("actions.cancel")}
             </button>
             <button
               type="submit"
-              className="px-4 py-2 text-sm font-medium text-white bg-primary-600 rounded-md hover:bg-primary-700"
+              className="px-4 py-2 text-sm font-medium text-white bg-primary-600 rounded-lg hover:bg-primary-700 transition-colors"
             >
               {noteToEdit ? t("actions.save") : t("actions.add")}
             </button>
@@ -287,6 +295,16 @@ export default function Process() {
   const { watches, removeWatch, removeNote } = useWatchStore();
   const isRTL = i18n.dir() === "rtl";
 
+  const sortedWatches = [...watches].sort((a, b) => {
+    const aLatestNote = a.notes[0]?.createdAt
+      ? new Date(a.notes[0].createdAt).getTime()
+      : 0;
+    const bLatestNote = b.notes[0]?.createdAt
+      ? new Date(b.notes[0].createdAt).getTime()
+      : 0;
+    return bLatestNote - aLatestNote;
+  });
+
   const toggleExpand = (id: string) => {
     setExpanded((prev) => ({ ...prev, [id]: !prev[id] }));
   };
@@ -295,25 +313,25 @@ export default function Process() {
     switch (status) {
       case "SETUP_SUCCESS":
         return (
-          <span className="px-2 py-1 text-xs text-green-600 dark:text-green-400">
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-300">
             {t("watch.statuses.setupSuccess")}
           </span>
         );
       case "TIP":
         return (
-          <span className="px-2 py-1 text-xs text-blue-600 dark:text-blue-400">
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-300">
             {t("watch.statuses.tip")}
           </span>
         );
       case "WATCHING":
         return (
-          <span className="px-2 py-1 text-xs text-yellow-600 dark:text-yellow-400">
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 dark:bg-yellow-900/50 text-yellow-800 dark:text-yellow-300">
             {t("watch.statuses.watching")}
           </span>
         );
       case "FAILED":
         return (
-          <span className="px-2 py-1 text-xs text-red-600 dark:text-red-400">
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 dark:bg-red-900/50 text-red-800 dark:text-red-300">
             {t("watch.statuses.failed")}
           </span>
         );
@@ -327,71 +345,66 @@ export default function Process() {
       }`}
     >
       <main className="flex-1 w-full px-4 py-8">
-        <div className="w-full max-w-[2000px] mx-auto">
+        <div className="w-full max-w-[2000px] mx-auto space-y-8">
           <div
-            className={`flex justify-between items-center mb-6 ${
+            className={`flex justify-between items-center ${
               isRTL ? "flex-row-reverse" : ""
             }`}
           >
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-              {t("watch.title")}
-            </h1>
             <button
               onClick={() => setIsAddingWatch(true)}
-              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-primary-600 rounded-md hover:bg-primary-700"
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-primary-600 dark:bg-primary-500 rounded-lg hover:bg-primary-700 dark:hover:bg-primary-600 transition-colors shadow-sm"
             >
               <PlusIcon className="h-4 w-4" />
               {t("actions.addWatch")}
             </button>
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white text-right">
+                {t("watch.title")}
+              </h1>
+              <p className="mt-1 text-sm text-gray-500 dark:text-gray-400 text-right">
+                {t("watch.description")}
+              </p>
+            </div>
           </div>
 
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden border border-gray-200 dark:border-gray-700">
             <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-              <thead className="bg-gray-50 dark:bg-gray-900">
+              <thead className="bg-gray-50 dark:bg-gray-900/50">
                 <tr>
                   <th className="w-8 px-1" />
                   <th
-                    className={`px-2 py-2 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider w-36 ${
+                    className={`w-24 px-3 py-3.5 text-sm font-medium text-gray-500 dark:text-gray-400 ${
                       isRTL ? "text-right" : "text-left"
                     }`}
                   >
                     {t("watch.status")}
                   </th>
                   <th
-                    className={`px-2 py-2 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider w-32 ${
+                    className={`w-32 px-3 py-3.5 text-sm font-medium text-gray-500 dark:text-gray-400 ${
                       isRTL ? "text-right" : "text-left"
                     }`}
                   >
                     {t("watch.symbol")}
                   </th>
                   <th
-                    className={`px-2 py-2 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider flex-1 min-w-[200px] ${
+                    className={`px-3 py-3.5 text-sm font-medium text-gray-500 dark:text-gray-400 ${
                       isRTL ? "text-right" : "text-left"
                     }`}
                   >
                     {t("watch.latestNote")}
                   </th>
-                  <th
-                    className={`px-2 py-2 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider w-32 ${
-                      isRTL ? "text-right" : "text-left"
-                    }`}
-                  >
-                    {t("watch.lastUpdated")}
-                  </th>
                   <th className="w-16 px-1" />
                 </tr>
               </thead>
-              <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                {watches.map((watch) => (
-                  <>
-                    <tr
-                      key={watch.id}
-                      className="hover:bg-gray-50 dark:hover:bg-gray-700"
-                    >
+              <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                {sortedWatches.map((watch) => (
+                  <React.Fragment key={watch.id}>
+                    <tr className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                       <td className="px-1">
                         <button
                           onClick={() => toggleExpand(watch.id)}
-                          className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-600"
+                          className="p-1.5 rounded-full hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-300 transition-colors"
                         >
                           {expanded[watch.id] ? (
                             <ChevronUpIcon className="h-4 w-4 text-gray-500 dark:text-gray-400" />
@@ -400,42 +413,41 @@ export default function Process() {
                           )}
                         </button>
                       </td>
-                      <td className="px-2 py-3">
+                      <td className="px-3 py-4">
                         <div className="flex flex-wrap gap-1">
                           {watch.notes.length > 0 &&
-                            getStatusBadge(
-                              watch.notes[watch.notes.length - 1].status
-                            )}
+                            getStatusBadge(watch.notes[0].status)}
                         </div>
                       </td>
-                      <td className="px-2 py-3 text-sm font-medium text-gray-900 dark:text-white">
+                      <td className="px-3 py-4">
                         <div className="flex items-center gap-2">
-                          <span>{watch.symbol}</span>
+                          <span className="font-medium text-gray-900 dark:text-white">
+                            {watch.symbol}
+                          </span>
                           {watch.notes.length > 0 && (
-                            <span className="px-1.5 py-0.5 text-xs bg-gray-100 dark:bg-gray-700 rounded-full">
+                            <span className="px-2 py-0.5 text-xs bg-gray-100 dark:bg-gray-700 rounded-full text-gray-600 dark:text-gray-400">
                               {watch.notes.length}
                             </span>
                           )}
                         </div>
                       </td>
-                      <td className="px-2 py-3 text-sm text-gray-600 dark:text-gray-300">
+                      <td className="px-3 py-4">
                         {watch.notes.length > 0 ? (
-                          <div className="truncate max-w-xl">
-                            {watch.notes[watch.notes.length - 1].content}
+                          <div className="truncate max-w-xl text-gray-600 dark:text-gray-300">
+                            {watch.notes[0].content}
                           </div>
                         ) : (
-                          <span className="text-gray-400 dark:text-gray-500 italic text-sm">
+                          <span className="text-gray-400 dark:text-gray-500 italic">
                             {t("watch.noNotes")}
                           </span>
                         )}
                       </td>
-                      <td className="px-2 py-3 text-sm text-gray-500 dark:text-gray-400">
-                        {format(new Date(watch.lastUpdated), "MMM d, yyyy")}
-                      </td>
+
                       <td className="px-1">
                         <button
                           onClick={() => removeWatch(watch.id)}
-                          className="p-1 text-red-600 hover:bg-red-50 rounded-full"
+                          className="p-1.5 text-red-600 dark:bg-red-900/20 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full transition-colors"
+                          title={t("actions.delete")}
                         >
                           <TrashIcon className="h-4 w-4" />
                         </button>
@@ -444,8 +456,8 @@ export default function Process() {
                     {expanded[watch.id] && (
                       <tr>
                         <td
-                          colSpan={5}
-                          className="px-6 py-4 bg-gray-50 dark:bg-gray-900"
+                          colSpan={6}
+                          className="px-6 py-4 bg-gray-50 dark:bg-gray-900/50"
                         >
                           <div className={`space-y-4 ${isRTL ? "rtl" : "ltr"}`}>
                             <div
@@ -460,7 +472,7 @@ export default function Process() {
                                 onClick={() =>
                                   setNoteModal({ watchId: watch.id })
                                 }
-                                className={`flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-white bg-primary-600 rounded-md hover:bg-primary-700 ${
+                                className={`flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-white bg-primary-600 dark:bg-primary-500 rounded-lg hover:bg-primary-700 dark:hover:bg-primary-600 transition-colors ${
                                   isRTL ? "flex-row-reverse" : ""
                                 }`}
                               >
@@ -474,10 +486,10 @@ export default function Process() {
                               </p>
                             ) : (
                               <div className="space-y-3">
-                                {watch.notes.map((note) => (
+                                {[...watch.notes].reverse().map((note) => (
                                   <div
                                     key={note.id}
-                                    className={`flex items-start bg-white dark:bg-gray-800 p-3 rounded-md`}
+                                    className="flex items-start bg-white dark:bg-gray-800 p-4 rounded-lg  shadow-sm"
                                   >
                                     <div className="shrink-0 mx-3">
                                       {getStatusBadge(note.status)}
@@ -490,7 +502,7 @@ export default function Process() {
                                       <p className="text-sm text-gray-900 dark:text-white">
                                         {note.content}
                                       </p>
-                                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
                                         {format(
                                           new Date(note.createdAt),
                                           "MMM d, yyyy HH:mm"
@@ -505,17 +517,19 @@ export default function Process() {
                                             note,
                                           })
                                         }
-                                        className="p-1 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                                        className="p-1.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
+                                        title={t("actions.edit")}
                                       >
-                                        <PencilIcon className="h-3 w-3" />
+                                        <PencilIcon className="h-3.5 w-3.5" />
                                       </button>
                                       <button
                                         onClick={() =>
                                           removeNote(watch.id, note.id)
                                         }
-                                        className="p-1 text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
+                                        className="p-1.5 text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full transition-colors"
+                                        title={t("actions.delete")}
                                       >
-                                        <TrashIcon className="h-3 w-3" />
+                                        <TrashIcon className="h-3.5 w-3.5" />
                                       </button>
                                     </div>
                                   </div>
@@ -526,7 +540,7 @@ export default function Process() {
                         </td>
                       </tr>
                     )}
-                  </>
+                  </React.Fragment>
                 ))}
               </tbody>
             </table>

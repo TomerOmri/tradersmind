@@ -110,6 +110,9 @@ function TradeTable({
               <th className="flex-1 px-6 py-4 text-start text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
                 {t("trade.tags")}
               </th>
+              <th className="w-16 px-6 py-4 text-start text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">
+                {t("trade.actions")}
+              </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
@@ -179,6 +182,15 @@ function TradeTable({
                   </td>
                   <td className="px-6 py-4">
                     <TagManager tradeId={trade.id} />
+                  </td>
+                  <td className="px-6 py-4">
+                    <button
+                      onClick={() => onRemoveTrade(trade.id)}
+                      className="p-1.5 rounded-full text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30 dark:bg-gray-700 transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-red-500 dark:focus:ring-red-400 focus:ring-opacity-50"
+                      title={t("trade.deleteTrade")}
+                    >
+                      <TrashIcon className="h-4 w-4" />
+                    </button>
                   </td>
                 </tr>
                 {expanded[trade.id] && (
