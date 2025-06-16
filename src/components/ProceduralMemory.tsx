@@ -158,10 +158,16 @@ export default function ProceduralMemory() {
   const handleSubmit = async () => {
     if (!previewUrl || !newText || selectedTags.length === 0) return;
 
+    // Find the original tag cases from availableTags
+    const originalCaseTags = selectedTags.map(
+      (tag) =>
+        availableTags.find((t) => t.toLowerCase() === tag.toLowerCase()) || tag
+    );
+
     addMemory({
       imageUrl: previewUrl,
       text: newText,
-      tags: selectedTags,
+      tags: originalCaseTags,
     });
 
     setPreviewUrl(null);

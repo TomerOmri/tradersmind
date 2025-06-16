@@ -106,17 +106,7 @@ export default function Header() {
       >
         {t("header.process")}
       </Link>
-      <Link
-        to="/reports"
-        className={`text-sm font-medium ${
-          isActive("/reports")
-            ? "text-primary-600 dark:text-primary-400"
-            : "text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-        }`}
-        onClick={() => setIsMobileMenuOpen(false)}
-      >
-        {t("header.reports")}
-      </Link>
+
       <Link
         to="/journal"
         className={`text-sm font-medium ${

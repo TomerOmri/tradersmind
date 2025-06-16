@@ -80,7 +80,7 @@ export default function MemoryGrid({ tag, stickyMessage }: MemoryGridProps) {
   const locale = i18n.language === "he" ? he : enUS;
 
   const filteredMemories = memories.filter((memory) =>
-    memory.tags.includes(tag)
+    memory.tags.some((t) => t.toLowerCase() === tag.toLowerCase())
   );
 
   const handleImageClick = (imageData: string) => {

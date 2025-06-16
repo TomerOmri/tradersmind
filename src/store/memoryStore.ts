@@ -10,8 +10,8 @@ export interface MemoryItem {
 }
 
 // Image compression utilities
-const MAX_WIDTH = 1600; // Slightly larger than trade store for better quality
-const COMPRESSION_QUALITY = 0.85; // Higher quality than trade store since these are important reference images
+const MAX_WIDTH = 2400; // Increased for better quality on high-res displays
+const COMPRESSION_QUALITY = 1; // Higher quality for important reference images
 
 const compressImage = async (url: string): Promise<string> => {
   return new Promise((resolve, reject) => {
@@ -24,8 +24,8 @@ const compressImage = async (url: string): Promise<string> => {
       let width = img.width;
       let height = img.height;
 
-      // Calculate new dimensions while maintaining aspect ratio
-      if (width > MAX_WIDTH) {
+      // Only resize if width is significantly larger than MAX_WIDTH
+      if (width > MAX_WIDTH * 1.5) {
         height = (MAX_WIDTH * height) / width;
         width = MAX_WIDTH;
       }
@@ -48,7 +48,7 @@ const compressImage = async (url: string): Promise<string> => {
       ctx.fillRect(0, 0, width, height);
       ctx.drawImage(img, 0, 0, width, height);
 
-      // Convert to JPEG for better compression
+      // Convert to JPEG for better compression while maintaining quality
       const compressedBase64 = canvas.toDataURL(
         "image/jpeg",
         COMPRESSION_QUALITY

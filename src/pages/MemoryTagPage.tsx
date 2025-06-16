@@ -26,19 +26,18 @@ export default function MemoryTagPage() {
 
   // Format tag for display (convert from URL format to display format)
   const displayTag = tag
-    ?.replace(/_/g, " ")
-    .split(" ")
+    ?.split("_")
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ");
 
-  // Get the count of memories for this tag
+  // Get the count of memories for this tag (case-insensitive)
   const memoryCount = memories.filter((memory) =>
-    memory.tags.includes(displayTag || "")
+    memory.tags.some((t) => t.toLowerCase() === displayTag?.toLowerCase())
   ).length;
 
-  // Get notes for this tag
+  // Get notes for this tag (case-insensitive)
   const tagNotes = notes
-    .filter((note) => note.tag === displayTag)
+    .filter((note) => note.tag?.toLowerCase() === displayTag?.toLowerCase())
     .sort(
       (a, b) =>
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()

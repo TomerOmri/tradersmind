@@ -436,7 +436,7 @@ function TradeTable({
                                 .map((note) => (
                                   <div
                                     key={note.id}
-                                    className="flex items-start justify-between bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 w-full group hover:border-gray-300 dark:hover:border-gray-600 transition-colors duration-150"
+                                    className="flex items-start justify-between bg-white dark:bg-gray-900 p-4 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 w-full group hover:border-gray-300 dark:hover:border-gray-600 transition-colors duration-150"
                                   >
                                     <div className="space-y-3 flex-1">
                                       {note.text && (
