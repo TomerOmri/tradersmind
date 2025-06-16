@@ -353,19 +353,19 @@ export default function ProceduralMemory() {
           </div>
           <button
             onClick={() => setFullscreenImage(null)}
-            className="absolute top-4 right-4 text-white hover:text-gray-300"
+            className="absolute top-4 right-4 text-white hover:text-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-full p-1"
           >
             <XMarkIcon className="h-8 w-8" />
           </button>
           <button
             onClick={() => navigateImage("prev")}
-            className="absolute left-4 text-white hover:text-gray-300"
+            className="absolute left-4 text-white hover:text-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-full p-1"
           >
-            <ChevronLeftIcon className="h-12 w-12" />
+            <ChevronLeftIcon className="h-12 w-12 text-white" />
           </button>
           <button
             onClick={() => navigateImage("next")}
-            className="absolute right-4 text-white hover:text-gray-300"
+            className="absolute right-4 text-white hover:text-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-full p-1"
           >
             <ChevronRightIcon className="h-12 w-12" />
           </button>

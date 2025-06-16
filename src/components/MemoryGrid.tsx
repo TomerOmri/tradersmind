@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import {
   XMarkIcon,
@@ -112,6 +112,23 @@ export default function MemoryGrid({ tag, stickyMessage }: MemoryGridProps) {
     deleteMemory(deleteModal.memoryId);
   };
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!fullscreenImage) return;
+
+      if (e.key === "ArrowLeft") {
+        navigateImage("prev");
+      } else if (e.key === "ArrowRight") {
+        navigateImage("next");
+      } else if (e.key === "Escape") {
+        setFullscreenImage(null);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [fullscreenImage, currentImageIndex]);
+
   return (
     <>
       <div className="container mx-auto p-4">
@@ -182,19 +199,19 @@ export default function MemoryGrid({ tag, stickyMessage }: MemoryGridProps) {
           </div>
           <button
             onClick={() => setFullscreenImage(null)}
-            className="absolute top-4 right-4 text-white hover:text-gray-300"
+            className="absolute top-4 right-4 text-white hover:text-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-full p-1"
           >
             <XMarkIcon className="h-8 w-8" />
           </button>
           <button
             onClick={() => navigateImage("prev")}
-            className="absolute left-4 text-white hover:text-gray-300"
+            className="absolute left-4 text-white hover:text-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-full p-1"
           >
             <ChevronLeftIcon className="h-12 w-12" />
           </button>
           <button
             onClick={() => navigateImage("next")}
-            className="absolute right-4 text-white hover:text-gray-300"
+            className="absolute right-4 text-white hover:text-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-full p-1"
           >
             <ChevronRightIcon className="h-12 w-12" />
           </button>
@@ -203,7 +220,7 @@ export default function MemoryGrid({ tag, stickyMessage }: MemoryGridProps) {
             alt=""
             className="max-h-[85vh] max-w-[90vw] object-contain mt-16"
           />
-          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-white text-sm">
+          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-white text-sm dark:bg-gray-800 dark:hover:bg-gray-700 rounded-full p-1">
             {currentImageIndex + 1} / {filteredMemories.length}
           </div>
         </div>

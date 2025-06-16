@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { format } from "date-fns";
@@ -19,6 +19,7 @@ export default function MemoryTagPage() {
   const { tag } = useParams<{ tag: string }>();
   const { t, i18n } = useTranslation();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentNoteIndex, setCurrentNoteIndex] = useState<number>(-1);
   const { memories } = useMemoryStore();
   const { notes, addNote, removeNote } = useStickyStore();
   const locale = i18n.language === "he" ? he : enUS;
@@ -42,6 +43,53 @@ export default function MemoryTagPage() {
       (a, b) =>
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     );
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Ignore if we're in an input field
+      if (
+        document.activeElement?.tagName.toLowerCase() === "input" ||
+        document.activeElement?.tagName.toLowerCase() === "textarea"
+      ) {
+        return;
+      }
+
+      if (!(e.key === "ArrowLeft" || e.key === "ArrowRight")) {
+        return;
+      }
+
+      if (tagNotes.length === 0) return;
+
+      // Stop event from bubbling to password manager
+      e.preventDefault();
+      e.stopPropagation();
+
+      if (e.key === "ArrowLeft" && !isRTL) {
+        setCurrentNoteIndex((prev) =>
+          prev === -1
+            ? tagNotes.length - 1
+            : (prev - 1 + tagNotes.length) % tagNotes.length
+        );
+      } else if (e.key === "ArrowRight" && !isRTL) {
+        setCurrentNoteIndex((prev) =>
+          prev === -1 ? 0 : (prev + 1) % tagNotes.length
+        );
+      } else if (e.key === "ArrowLeft" && isRTL) {
+        setCurrentNoteIndex((prev) =>
+          prev === -1 ? 0 : (prev + 1) % tagNotes.length
+        );
+      } else if (e.key === "ArrowRight" && isRTL) {
+        setCurrentNoteIndex((prev) =>
+          prev === -1
+            ? tagNotes.length - 1
+            : (prev - 1 + tagNotes.length) % tagNotes.length
+        );
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [tagNotes.length, isRTL]);
 
   const handleAddNote = (text: string) => {
     if (displayTag) {
@@ -102,12 +150,14 @@ export default function MemoryTagPage() {
         </div>
 
         <div className="space-y-2">
-          {tagNotes.map((note) => (
+          {tagNotes.map((note, index) => (
             <div
               key={note.id}
-              className={`flex items-center gap-3 p-2.5 bg-gray-900 dark:bg-black rounded-md relative group ${
+              className={`flex items-center gap-3 p-2.5 ${
+                currentNoteIndex === index ? "bg-gray-700" : "bg-gray-900"
+              } dark:bg-black rounded-md relative group ${
                 isRTL ? "text-right" : "text-left"
-              }`}
+              } transition-colors duration-200`}
               dir={isRTL ? "rtl" : "ltr"}
             >
               <p className="flex-1 min-w-0 text-sm text-gray-100 dark:text-gray-200 whitespace-pre-wrap break-words leading-snug">
