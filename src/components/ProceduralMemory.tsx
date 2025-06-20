@@ -267,7 +267,12 @@ export default function ProceduralMemory() {
                       onChange={handleFileSelect}
                       className="hidden"
                     />
-                    {t("actions.addImage")}
+                    <div className="flex flex-col items-center">
+                      {t("actions.addImage")}
+                      <span className="text-[10px] mt-1 opacity-75">
+                        CTRL/CMD+V
+                      </span>
+                    </div>
                   </div>
                 )}
                 <textarea
