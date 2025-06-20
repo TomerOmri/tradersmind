@@ -1,125 +1,265 @@
 import { create } from "zustand";
-import {
-  startOfDay,
-  endOfDay,
-  startOfMonth,
-  endOfMonth,
-  isSameDay,
-} from "date-fns";
-import { useTradeStore, type Trade, type TradeAction } from "./tradeStore";
+import { startOfDay, endOfDay, startOfMonth, endOfMonth } from "date-fns";
+import { useTradeStore } from "./tradeStore";
+import type { Trade } from "./tradeStore";
 
-interface DailyStats {
-  totalTrades: number;
+interface DayStats {
   wins: number;
   losses: number;
   pnl: number;
-  percentageChange?: number;
+  tradesCount: number;
+  winRate: number;
+  profitFactor: number;
+  averageWin: number;
+  averageLoss: number;
+  largestWin: number;
+  largestLoss: number;
+  accountGrowth: number;
+}
+
+interface MonthStats extends DayStats {
+  days: DayStats[];
 }
 
 interface ReportStore {
-  getDayStats: (date: Date) => DailyStats;
-  getMonthStats: (date: Date) => DailyStats;
+  getDayStats: (targetDate: Date) => DayStats;
+  getMonthStats: (targetDate: Date) => MonthStats;
 }
 
 const calculateTradeStats = (
-  actions: TradeAction[]
-): { pnl: number; shares: number } => {
-  return actions.reduce(
-    (acc, action) => {
-      if (action.type === "buy") {
-        acc.shares += action.shares;
-        acc.pnl -= action.shares * action.price;
-      } else if (action.type === "sell") {
-        acc.shares -= action.shares;
-        acc.pnl += action.shares * action.price;
+  trades: Trade[]
+): { wins: number; losses: number; pnl: number } => {
+  return trades.reduce(
+    (acc, trade) => {
+      const totalPnl = trade.actions.reduce((sum, action) => {
+        if (action.type === "buy") {
+          return sum - action.quantity * action.price;
+        } else {
+          return sum + action.quantity * action.price;
+        }
+      }, 0);
+
+      if (totalPnl > 0) {
+        acc.wins++;
+      } else if (totalPnl < 0) {
+        acc.losses++;
       }
+      acc.pnl += totalPnl;
+
       return acc;
     },
-    { pnl: 0, shares: 0 }
+    { wins: 0, losses: 0, pnl: 0 }
   );
 };
 
-const isTradeClosedOnDate = (trade: Trade, date: Date) => {
-  if (!trade.actions.length || trade.isActive) return false;
-
-  const lastAction = trade.actions[trade.actions.length - 1];
-  const closeDate = new Date(lastAction.date);
-  return isSameDay(closeDate, date);
-};
-
-const calculateDayStats = (trades: Trade[], targetDate: Date): DailyStats => {
-  const dayStart = startOfDay(targetDate);
-  const dayEnd = endOfDay(targetDate);
-
-  // Filter only closed trades that were closed on this specific day
-  const dayTrades = trades.filter(
-    (trade) => !trade.isActive && isTradeClosedOnDate(trade, targetDate)
-  );
-
-  const stats: DailyStats = {
-    totalTrades: dayTrades.length,
-    wins: dayTrades.filter((trade) => trade.status === "win").length,
-    losses: dayTrades.filter((trade) => trade.status === "loss").length,
-    pnl: 0,
-  };
-
-  // Calculate P&L for completed trades
-  stats.pnl = dayTrades.reduce((total, trade) => {
-    const { pnl } = calculateTradeStats(trade.actions);
-    return total + pnl;
-  }, 0);
-
-  // Calculate percentage change if there were trades
-  if (stats.totalTrades > 0) {
-    const { accountSize } = useTradeStore.getState();
-    if (accountSize && accountSize > 0) {
-      stats.percentageChange = (stats.pnl / accountSize) * 100;
-    }
-  }
-
-  return stats;
-};
-
-const calculateMonthStats = (trades: Trade[], date: Date): DailyStats => {
-  const monthStart = startOfMonth(date);
-  const monthEnd = endOfMonth(date);
-
-  // Filter only closed trades that were closed within this month
-  const monthTrades = trades.filter((trade) => {
-    if (trade.isActive || !trade.actions.length) return false;
-
-    const lastAction = trade.actions[trade.actions.length - 1];
-    const closeDate = new Date(lastAction.date);
-    return closeDate >= monthStart && closeDate <= monthEnd;
+const getDayStats = (targetDate: Date): DayStats => {
+  const start = startOfDay(targetDate);
+  const end = endOfDay(targetDate);
+  const trades = useTradeStore.getState().trades.filter((trade) => {
+    const latestAction = trade.actions[trade.actions.length - 1];
+    return (
+      latestAction &&
+      new Date(latestAction.date) >= start &&
+      new Date(latestAction.date) <= end
+    );
   });
 
-  const stats: DailyStats = {
-    totalTrades: monthTrades.length,
-    wins: monthTrades.filter((trade) => trade.status === "win").length,
-    losses: monthTrades.filter((trade) => trade.status === "loss").length,
-    pnl: monthTrades.reduce((total, trade) => {
-      const { pnl } = calculateTradeStats(trade.actions);
-      return total + pnl;
-    }, 0),
+  const { wins, losses, pnl } = calculateTradeStats(trades);
+  const tradesCount = trades.length;
+  const winRate = tradesCount > 0 ? (wins / tradesCount) * 100 : 0;
+
+  const winningTrades = trades.filter((trade) => {
+    const tradePnl = trade.actions.reduce((sum, action) => {
+      return action.type === "buy"
+        ? sum - action.quantity * action.price
+        : sum + action.quantity * action.price;
+    }, 0);
+    return tradePnl > 0;
+  });
+
+  const losingTrades = trades.filter((trade) => {
+    const tradePnl = trade.actions.reduce((sum, action) => {
+      return action.type === "buy"
+        ? sum - action.quantity * action.price
+        : sum + action.quantity * action.price;
+    }, 0);
+    return tradePnl < 0;
+  });
+
+  const averageWin =
+    winningTrades.length > 0
+      ? winningTrades.reduce((sum, trade) => {
+          const tradePnl = trade.actions.reduce((pnlSum, action) => {
+            return action.type === "buy"
+              ? pnlSum - action.quantity * action.price
+              : pnlSum + action.quantity * action.price;
+          }, 0);
+          return sum + tradePnl;
+        }, 0) / winningTrades.length
+      : 0;
+
+  const averageLoss =
+    losingTrades.length > 0
+      ? Math.abs(
+          losingTrades.reduce((sum, trade) => {
+            const tradePnl = trade.actions.reduce((pnlSum, action) => {
+              return action.type === "buy"
+                ? pnlSum - action.quantity * action.price
+                : pnlSum + action.quantity * action.price;
+            }, 0);
+            return sum + tradePnl;
+          }, 0) / losingTrades.length
+        )
+      : 0;
+
+  const largestWin = winningTrades.reduce((max, trade) => {
+    const tradePnl = trade.actions.reduce((sum, action) => {
+      return action.type === "buy"
+        ? sum - action.quantity * action.price
+        : sum + action.quantity * action.price;
+    }, 0);
+    return Math.max(max, tradePnl);
+  }, 0);
+
+  const largestLoss = Math.abs(
+    losingTrades.reduce((min, trade) => {
+      const tradePnl = trade.actions.reduce((sum, action) => {
+        return action.type === "buy"
+          ? sum - action.quantity * action.price
+          : sum + action.quantity * action.price;
+      }, 0);
+      return Math.min(min, tradePnl);
+    }, 0)
+  );
+
+  const profitFactor = averageLoss !== 0 ? averageWin / averageLoss : 0;
+  const initialBalance = 10000; // TODO: Get from settings
+  const accountGrowth = initialBalance > 0 ? (pnl / initialBalance) * 100 : 0;
+
+  return {
+    wins,
+    losses,
+    pnl,
+    tradesCount,
+    winRate,
+    profitFactor,
+    averageWin,
+    averageLoss,
+    largestWin,
+    largestLoss,
+    accountGrowth,
   };
-
-  if (stats.totalTrades > 0) {
-    const { accountSize } = useTradeStore.getState();
-    if (accountSize && accountSize > 0) {
-      stats.percentageChange = (stats.pnl / accountSize) * 100;
-    }
-  }
-
-  return stats;
 };
 
-export const useReportStore = create<ReportStore>()((set, get) => ({
-  getDayStats: (date: Date) => {
-    const trades = useTradeStore.getState().trades;
-    return calculateDayStats(trades, date);
-  },
-  getMonthStats: (date: Date) => {
-    const trades = useTradeStore.getState().trades;
-    return calculateMonthStats(trades, date);
-  },
+const getMonthStats = (targetDate: Date): MonthStats => {
+  const start = startOfMonth(targetDate);
+  const end = endOfMonth(targetDate);
+  const trades = useTradeStore.getState().trades.filter((trade) => {
+    const latestAction = trade.actions[trade.actions.length - 1];
+    return (
+      latestAction &&
+      new Date(latestAction.date) >= start &&
+      new Date(latestAction.date) <= end
+    );
+  });
+
+  const { wins, losses, pnl } = calculateTradeStats(trades);
+  const tradesCount = trades.length;
+  const winRate = tradesCount > 0 ? (wins / tradesCount) * 100 : 0;
+
+  // Calculate daily stats for the month
+  const days: DayStats[] = [];
+  let currentDate = start;
+  while (currentDate <= end) {
+    days.push(getDayStats(currentDate));
+    currentDate = new Date(currentDate.setDate(currentDate.getDate() + 1));
+  }
+
+  const winningTrades = trades.filter((trade) => {
+    const tradePnl = trade.actions.reduce((sum, action) => {
+      return action.type === "buy"
+        ? sum - action.quantity * action.price
+        : sum + action.quantity * action.price;
+    }, 0);
+    return tradePnl > 0;
+  });
+
+  const losingTrades = trades.filter((trade) => {
+    const tradePnl = trade.actions.reduce((sum, action) => {
+      return action.type === "buy"
+        ? sum - action.quantity * action.price
+        : sum + action.quantity * action.price;
+    }, 0);
+    return tradePnl < 0;
+  });
+
+  const averageWin =
+    winningTrades.length > 0
+      ? winningTrades.reduce((sum, trade) => {
+          const tradePnl = trade.actions.reduce((pnlSum, action) => {
+            return action.type === "buy"
+              ? pnlSum - action.quantity * action.price
+              : pnlSum + action.quantity * action.price;
+          }, 0);
+          return sum + tradePnl;
+        }, 0) / winningTrades.length
+      : 0;
+
+  const averageLoss =
+    losingTrades.length > 0
+      ? Math.abs(
+          losingTrades.reduce((sum, trade) => {
+            const tradePnl = trade.actions.reduce((pnlSum, action) => {
+              return action.type === "buy"
+                ? pnlSum - action.quantity * action.price
+                : pnlSum + action.quantity * action.price;
+            }, 0);
+            return sum + tradePnl;
+          }, 0) / losingTrades.length
+        )
+      : 0;
+
+  const largestWin = winningTrades.reduce((max, trade) => {
+    const tradePnl = trade.actions.reduce((sum, action) => {
+      return action.type === "buy"
+        ? sum - action.quantity * action.price
+        : sum + action.quantity * action.price;
+    }, 0);
+    return Math.max(max, tradePnl);
+  }, 0);
+
+  const largestLoss = Math.abs(
+    losingTrades.reduce((min, trade) => {
+      const tradePnl = trade.actions.reduce((sum, action) => {
+        return action.type === "buy"
+          ? sum - action.quantity * action.price
+          : sum + action.quantity * action.price;
+      }, 0);
+      return Math.min(min, tradePnl);
+    }, 0)
+  );
+
+  const profitFactor = averageLoss !== 0 ? averageWin / averageLoss : 0;
+  const initialBalance = 10000; // TODO: Get from settings
+  const accountGrowth = initialBalance > 0 ? (pnl / initialBalance) * 100 : 0;
+
+  return {
+    wins,
+    losses,
+    pnl,
+    tradesCount,
+    winRate,
+    profitFactor,
+    averageWin,
+    averageLoss,
+    largestWin,
+    largestLoss,
+    accountGrowth,
+    days,
+  };
+};
+
+export const useReportStore = create<ReportStore>()(() => ({
+  getDayStats,
+  getMonthStats,
 }));

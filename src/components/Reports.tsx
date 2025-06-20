@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   format,
@@ -17,7 +17,7 @@ import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
 interface DayCardProps {
   date: Date;
   currentMonth: Date;
-  locale: Locale;
+  locale: typeof he | typeof enUS;
 }
 
 const DayCard = ({ date, currentMonth, locale }: DayCardProps) => {
@@ -37,11 +37,11 @@ const DayCard = ({ date, currentMonth, locale }: DayCardProps) => {
   return (
     <div
       className={`h-32 bg-gray-800 rounded-lg p-3 flex flex-col ${
-        stats.totalTrades > 0 ? "ring-1 ring-primary-500/30" : ""
+        stats.tradesCount > 0 ? "ring-1 ring-primary-500/30" : ""
       }`}
     >
       <span className="text-gray-400 mb-2">{format(date, "d")}</span>
-      {stats.totalTrades > 0 && (
+      {stats.tradesCount > 0 && (
         <>
           <span
             className={`text-lg font-medium ${
@@ -50,18 +50,16 @@ const DayCard = ({ date, currentMonth, locale }: DayCardProps) => {
           >
             ${stats.pnl.toLocaleString()}
           </span>
-          {stats.percentageChange && (
-            <span
-              className={`text-xs ${
-                stats.pnl >= 0 ? "text-green-500/70" : "text-red-500/70"
-              }`}
-            >
-              {stats.percentageChange > 0 ? "+" : ""}
-              {stats.percentageChange.toFixed(2)}%
-            </span>
-          )}
+          <span
+            className={`text-xs ${
+              stats.pnl >= 0 ? "text-green-500/70" : "text-red-500/70"
+            }`}
+          >
+            {stats.accountGrowth > 0 ? "+" : ""}
+            {stats.accountGrowth.toFixed(2)}%
+          </span>
           <span className="text-sm text-gray-500 mt-1">
-            {stats.totalTrades} {t("reports.trades")}
+            {stats.tradesCount} {t("reports.trades")}
           </span>
           <div className="flex gap-1 mt-auto text-xs">
             <span className="text-green-500">{stats.wins}</span>
@@ -76,7 +74,7 @@ const DayCard = ({ date, currentMonth, locale }: DayCardProps) => {
 
 interface WeeklySummaryProps {
   days: Date[];
-  locale: Locale;
+  locale: typeof he | typeof enUS;
 }
 
 const WeeklySummary = ({ days, locale }: WeeklySummaryProps) => {
@@ -87,20 +85,20 @@ const WeeklySummary = ({ days, locale }: WeeklySummaryProps) => {
     (acc, date) => {
       const dayStats = getDayStats(date);
       return {
-        totalTrades: acc.totalTrades + dayStats.totalTrades,
+        tradesCount: acc.tradesCount + dayStats.tradesCount,
         wins: acc.wins + dayStats.wins,
         losses: acc.losses + dayStats.losses,
         pnl: acc.pnl + dayStats.pnl,
       };
     },
-    { totalTrades: 0, wins: 0, losses: 0, pnl: 0 }
+    { tradesCount: 0, wins: 0, losses: 0, pnl: 0 }
   );
 
-  if (weekStats.totalTrades === 0) return null;
+  if (weekStats.tradesCount === 0) return null;
 
   const winRate =
-    weekStats.totalTrades > 0
-      ? ((weekStats.wins / weekStats.totalTrades) * 100).toFixed(1)
+    weekStats.tradesCount > 0
+      ? ((weekStats.wins / weekStats.tradesCount) * 100).toFixed(1)
       : "0";
 
   return (
@@ -115,7 +113,7 @@ const WeeklySummary = ({ days, locale }: WeeklySummaryProps) => {
           ${weekStats.pnl.toLocaleString()}
         </div>
         <div className="text-sm text-gray-500">
-          {weekStats.totalTrades} {t("reports.trades")}
+          {weekStats.tradesCount} {t("reports.trades")}
         </div>
         <div className="flex items-center gap-2 text-sm">
           <div className="flex gap-1">
@@ -145,16 +143,21 @@ const Reports = () => {
 
   // Add days from previous month to start the calendar on Sunday
   const firstDayOfMonth = getDay(days[0]);
-  const previousMonthDays = Array.from({ length: firstDayOfMonth }, (_, i) =>
-    subMonths(days[0], 1).setDate(
-      endOfMonth(subMonths(days[0], 1)).getDate() - firstDayOfMonth + i + 1
-    )
+  const previousMonthDays = Array.from(
+    { length: firstDayOfMonth },
+    (_, i) =>
+      new Date(
+        subMonths(days[0], 1).setDate(
+          endOfMonth(subMonths(days[0], 1)).getDate() - firstDayOfMonth + i + 1
+        )
+      )
   );
 
   // Add days from next month to complete the calendar
   const lastDayOfMonth = getDay(days[days.length - 1]);
-  const nextMonthDays = Array.from({ length: 6 - lastDayOfMonth }, (_, i) =>
-    addMonths(days[0], 1).setDate(i + 1)
+  const nextMonthDays = Array.from(
+    { length: 6 - lastDayOfMonth },
+    (_, i) => new Date(addMonths(days[0], 1).setDate(i + 1))
   );
 
   const allDays = [...previousMonthDays, ...days, ...nextMonthDays];
@@ -188,7 +191,7 @@ const Reports = () => {
               <h2 className="text-xl font-semibold text-white">
                 {format(currentMonth, "MMMM yyyy", { locale })}
               </h2>
-              {monthStats.totalTrades > 0 && (
+              {monthStats.tradesCount > 0 && (
                 <div className="flex items-center gap-2 mt-1">
                   <span
                     className={`text-sm ${
@@ -197,18 +200,16 @@ const Reports = () => {
                   >
                     ${monthStats.pnl.toLocaleString()}
                   </span>
-                  {monthStats.percentageChange && (
-                    <span
-                      className={`text-xs ${
-                        monthStats.pnl >= 0
-                          ? "text-green-500/70"
-                          : "text-red-500/70"
-                      }`}
-                    >
-                      ({monthStats.percentageChange > 0 ? "+" : ""}
-                      {monthStats.percentageChange.toFixed(2)}%)
-                    </span>
-                  )}
+                  <span
+                    className={`text-xs ${
+                      monthStats.pnl >= 0
+                        ? "text-green-500/70"
+                        : "text-red-500/70"
+                    }`}
+                  >
+                    ({monthStats.accountGrowth > 0 ? "+" : ""}
+                    {monthStats.accountGrowth.toFixed(2)}%)
+                  </span>
                 </div>
               )}
             </div>
@@ -236,7 +237,7 @@ const Reports = () => {
                   {week.map((day) => (
                     <DayCard
                       key={day.toString()}
-                      date={new Date(day)}
+                      date={day}
                       currentMonth={currentMonth}
                       locale={locale}
                     />
