@@ -85,7 +85,12 @@
     "tags": "תגיות",
     "addTag": "הוסף תגית",
     "newTag": "תגית חדשה...",
-    "tagUsage": "לקחים"
+    "tagUsage": "לקחים",
+    "aggressiveness": "אגרסיביות הפוזיציה",
+    "aggressivenessValue": "{{value}}% מסך החשבון",
+    "aggressivenessLow": "לא אגרסיבי",
+    "aggressivenessNormal": "פוזיציה רגילה",
+    "aggressivenessHigh": "פוזיציה אגרסיבית"
   },
   "status": {
     "open": "פתוחה",

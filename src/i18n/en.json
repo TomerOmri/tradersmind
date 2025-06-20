@@ -66,7 +66,12 @@
     "tags": "Tags",
     "addTag": "Add Tag",
     "newTag": "New tag...",
-    "tagUsage": "Tag Usage"
+    "tagUsage": "Tag Usage",
+    "aggressiveness": "Position Aggressiveness",
+    "aggressivenessValue": "{{value}}% from total account",
+    "aggressivenessLow": "Not aggressive",
+    "aggressivenessNormal": "Normal Position",
+    "aggressivenessHigh": "Aggressive Position"
   },
   "status": {
     "open": "Open",

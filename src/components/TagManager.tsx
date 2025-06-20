@@ -6,18 +6,15 @@ import { motion, AnimatePresence } from "framer-motion";
 
 interface TagManagerProps {
   tradeId: string;
+  isWin: boolean;
 }
 
-const PRESET_COLORS = [
-  "bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-200",
-  "bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-200",
-  "bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-200",
-  "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-200",
-  "bg-purple-100 text-purple-800 dark:bg-purple-900/50 dark:text-purple-200",
-  "bg-pink-100 text-pink-800 dark:bg-pink-900/50 dark:text-pink-200",
-];
+const WIN_COLOR =
+  "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-200";
+const LOSS_COLOR =
+  "bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-200";
 
-export default function TagManager({ tradeId }: TagManagerProps) {
+export default function TagManager({ tradeId, isWin }: TagManagerProps) {
   const { t } = useTranslation();
   const [isAdding, setIsAdding] = useState(false);
   const [newTagName, setNewTagName] = useState("");
@@ -27,6 +24,7 @@ export default function TagManager({ tradeId }: TagManagerProps) {
     useTagStore();
 
   const tradeTags = getTagsForTrade(tradeId);
+  const tagColor = isWin ? WIN_COLOR : LOSS_COLOR;
 
   useEffect(() => {
     if (isAdding && inputRef.current) {
@@ -48,12 +46,10 @@ export default function TagManager({ tradeId }: TagManagerProps) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleCreateTag = () => {
+  const handleCreateTag = async () => {
     if (!newTagName.trim()) return;
-    const color =
-      PRESET_COLORS[Math.floor(Math.random() * PRESET_COLORS.length)];
-    const newTag = addTag(newTagName.trim(), color);
-    addTradeTag(tradeId, newTag.id);
+    const newTag = await addTag(newTagName.trim(), tagColor);
+    await addTradeTag(tradeId, newTag.id);
     setIsAdding(false);
     setNewTagName("");
   };
@@ -67,7 +63,7 @@ export default function TagManager({ tradeId }: TagManagerProps) {
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.8, opacity: 0 }}
-            className={`inline-flex items-center px-2 py-0.5 rounded-lg text-xs font-medium transition-all ${tag.color} hover:shadow-sm`}
+            className={`inline-flex items-center px-2 py-0.5 rounded-lg text-xs font-medium transition-all ${tagColor} hover:shadow-sm`}
           >
             {tag.name}
             <button

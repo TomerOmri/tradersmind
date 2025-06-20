@@ -181,7 +181,10 @@ function TradeTable({
                     </span>
                   </td>
                   <td className="px-6 py-4">
-                    <TagManager tradeId={trade.id} />
+                    <TagManager
+                      tradeId={trade.id}
+                      isWin={calculatePnL(trade.actions) >= 0}
+                    />
                   </td>
                   <td className="px-6 py-4">
                     <button

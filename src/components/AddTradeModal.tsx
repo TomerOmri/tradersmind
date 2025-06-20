@@ -130,6 +130,18 @@ export default function AddTradeModal({
     }
   };
 
+  const getAggressivenessColor = (value: number): string => {
+    if (value <= 24) return "text-green-600 dark:text-green-400";
+    if (value <= 56) return "text-yellow-600 dark:text-yellow-400";
+    return "text-red-600 dark:text-red-400";
+  };
+
+  const getAggressivenessBarColor = (value: number): string => {
+    if (value <= 24) return "bg-green-600";
+    if (value <= 56) return "bg-yellow-600";
+    return "bg-red-600";
+  };
+
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 overflow-y-auto">
       <div
@@ -147,7 +159,7 @@ export default function AddTradeModal({
             </h2>
             <button
               onClick={onClose}
-              className="p-2 text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 transition-colors hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl"
+              className="p-2 text-gray-400 hover:text-gray-500 dark:hover:text-gray-300 transition-colors hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl bg-gray-50 dark:bg-gray-800"
             >
               <XMarkIcon className="h-5 w-5" />
             </button>
@@ -228,7 +240,7 @@ export default function AddTradeModal({
                     className={`flex items-center gap-1.5 px-4 py-1.5 rounded-xl text-sm font-medium transition-colors ${
                       formData.isBuy
                         ? "bg-green-500/10 text-green-600 dark:text-green-400"
-                        : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+                        : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 bg-gray-50 dark:bg-gray-800"
                     }`}
                   >
                     <ArrowTrendingUpIcon className="h-4 w-4" />
@@ -242,7 +254,7 @@ export default function AddTradeModal({
                     className={`flex items-center gap-1.5 px-4 py-1.5 rounded-xl text-sm font-medium transition-colors ${
                       !formData.isBuy
                         ? "bg-red-500/10 text-red-600 dark:text-red-400"
-                        : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+                        : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 bg-gray-50 dark:bg-gray-800"
                     }`}
                   >
                     <ArrowTrendingDownIcon className="h-4 w-4" />
@@ -292,7 +304,6 @@ export default function AddTradeModal({
                           [field.key]: e.target.value,
                         })
                       }
-                      placeholder={t(field.placeholder)}
                       className={`w-full ${
                         isRTL ? "pr-8 pl-3" : "pl-8 pr-3"
                       } py-2 border rounded-xl focus:outline-none focus:ring-2 ${
@@ -365,7 +376,7 @@ export default function AddTradeModal({
               <div className="flex flex-col lg:flex-row gap-6">
                 {/* Trade Summary Section */}
                 <div className="flex-1">
-                  <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 underline">
                     {t("trade.tradeSummary")}
                   </h3>
                   <div className="space-y-1">
@@ -438,6 +449,59 @@ export default function AddTradeModal({
                           )
                         ).toFixed(2)}
                       </span>
+                    </div>
+                    <div className="flex items-center">
+                      <div className="flex-1 mt-5">
+                        <div
+                          className={`flex ${
+                            isRTL ? "justify-start" : "justify-end"
+                          }`}
+                        >
+                          <span
+                            className={`text-sm font-medium tabular-nums ${getAggressivenessColor(
+                              (parseFloat(formData.entryPrice || "0") *
+                                parseFloat(formData.shares || "0") *
+                                100) /
+                                (accountSize * 0.25)
+                            )}`}
+                            dir="ltr"
+                          >
+                            {t("trade.aggressivenessValue", {
+                              value: (
+                                (parseFloat(formData.entryPrice || "0") *
+                                  parseFloat(formData.shares || "0") *
+                                  100) /
+                                accountSize
+                              ).toFixed(1),
+                            })}
+                          </span>
+                        </div>
+                        <div className="mt-1 h-1.5 w-full bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                          <div
+                            className={`h-full ${getAggressivenessBarColor(
+                              (parseFloat(formData.entryPrice || "0") *
+                                parseFloat(formData.shares || "0") *
+                                100) /
+                                (accountSize * 0.25)
+                            )}`}
+                            style={{
+                              width: `${Math.min(
+                                ((parseFloat(formData.entryPrice || "0") *
+                                  parseFloat(formData.shares || "0") *
+                                  100) /
+                                  accountSize) *
+                                  4,
+                                100
+                              )}%`,
+                            }}
+                          />
+                        </div>
+                        <div className="flex justify-between mt-0.5 text-[10px] text-gray-500 dark:text-gray-400">
+                          <span>{t("trade.aggressivenessLow")}</span>
+                          <span>{t("trade.aggressivenessNormal")}</span>
+                          <span>{t("trade.aggressivenessHigh")}</span>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>

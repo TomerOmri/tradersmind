@@ -136,7 +136,7 @@ function TradeTable({
   }
 
   return (
-    <div className="overflow-hidden rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
+    <div className="overflow-hidden rounded-xl  border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
           <thead>
@@ -315,9 +315,8 @@ function TradeTable({
                             <div className="flex-shrink-0">
                               {t("trade.tradeActions")}
                             </div>
-                            <div className="h-px flex-grow bg-gray-200 dark:bg-gray-700" />
                           </div>
-                          <div className="bg-white dark:bg-gray-800 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700 w-full shadow-sm">
+                          <div className="bg-white dark:bg-gray-800 rounded-lg overflow-hidden  border-gray-200 dark:border-gray-700 w-full shadow-sm">
                             <table className="w-full divide-y divide-gray-200 dark:divide-gray-700">
                               <thead className="bg-gray-50 dark:bg-gray-900">
                                 <tr>
@@ -416,16 +415,11 @@ function TradeTable({
 
                         <div className="w-full">
                           <div className="flex items-center space-x-2 text-xs font-medium text-gray-500 dark:text-gray-400 mb-4">
-                            <div className="flex-shrink-0">
-                              {t("trade.tradeNotes")}
-                            </div>
                             <div className="h-px flex-grow bg-gray-200 dark:bg-gray-700" />
                           </div>
                           <div className="space-y-4 w-full">
                             {!trade.notes || trade.notes.length === 0 ? (
-                              <p className="text-sm text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
-                                {t("trade.noNotes")}
-                              </p>
+                              <span />
                             ) : (
                               trade.notes
                                 .sort(
