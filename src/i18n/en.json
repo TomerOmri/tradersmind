@@ -71,7 +71,19 @@
     "aggressivenessValue": "{{value}}% from total account",
     "aggressivenessLow": "Not aggressive",
     "aggressivenessNormal": "Normal Position",
-    "aggressivenessHigh": "Aggressive Position"
+    "aggressivenessHigh": "Aggressive Position",
+    "summary": "Position Summary",
+    "currentPosition": "Current Position",
+    "currentCostBasis": "Current Cost Basis",
+    "newPosition": "New Position",
+    "newCostBasis": "New Cost Basis",
+    "riskAmount": "Risk Amount",
+    "positionSize": "Position Size",
+    "positionPercent": "Position %",
+    "remainingPosition": "Remaining Position",
+    "potentialProfit": "Potential Profit",
+    "sharesLabel": "Shares",
+    "percentFromTotal": "% of Position"
   },
   "status": {
     "open": "Open",

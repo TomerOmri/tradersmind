@@ -90,7 +90,17 @@
     "aggressivenessValue": "{{value}}% מסך החשבון",
     "aggressivenessLow": "לא אגרסיבי",
     "aggressivenessNormal": "פוזיציה רגילה",
-    "aggressivenessHigh": "פוזיציה אגרסיבית"
+    "aggressivenessHigh": "פוזיציה אגרסיבית",
+    "summary": "סיכום פוזיציה",
+    "currentPosition": "פוזיציה נוכחית",
+    "currentCostBasis": "עלות נוכחית",
+    "newPosition": "פוזיציה חדשה",
+    "newCostBasis": "עלות חדשה",
+    "positionSize": "גודל פוזיציה",
+    "positionPercent": "אחוז מהחשבון",
+    "remainingPosition": "פוזיציה נותרת",
+    "sharesLabel": "מניות",
+    "percentFromTotal": "% מהפוזיציה"
   },
   "status": {
     "open": "פתוחה",

@@ -1,10 +1,10 @@
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 import { ItemStorage } from "./localForageInstances";
 
 export type TradeType = "buy" | "sell";
 
 export interface TradeAction {
-  id: string;
   type: TradeType;
   price: number;
   quantity: number;
@@ -79,13 +79,10 @@ const compressImage = async (file: File): Promise<string | null> => {
   });
 };
 
-interface TradeStore {
+interface TradeState {
   trades: Trade[];
   addTrade: (trade: TradeData) => Promise<void>;
-  addAction: (
-    tradeId: string,
-    action: Omit<TradeAction, "id">
-  ) => Promise<void>;
+  addAction: (tradeId: string, action: Omit<TradeAction, "date">) => void;
   updateAction: (
     tradeId: string,
     actionId: string,
@@ -110,154 +107,175 @@ const calculateTradeStatus = (actions: TradeAction[]): boolean => {
 // Create storage instances
 const tradeStorage = new ItemStorage<Trade>("trade-store", "trade");
 
-export const useTradeStore = create<TradeStore>((set, get) => ({
-  trades: [],
+export const useTradeStore = create<TradeState>()(
+  persist(
+    (set, get) => ({
+      trades: [],
 
-  addTrade: async (tradeData) => {
-    const action = { ...tradeData.action, id: crypto.randomUUID() };
-    const trade: Trade = {
-      id: crypto.randomUUID(),
-      symbol: tradeData.symbol,
-      actions: [action],
-      notes: [],
-      isActive: true,
-      setupType: tradeData.setupType,
-    };
+      addTrade: async (tradeData) => {
+        const action = { ...tradeData.action, id: crypto.randomUUID() };
+        const trade: Trade = {
+          id: crypto.randomUUID(),
+          symbol: tradeData.symbol,
+          actions: [action],
+          notes: [],
+          isActive: true,
+          setupType: tradeData.setupType,
+        };
 
-    await tradeStorage.setItem(trade.id, trade);
-    set((state) => ({ trades: [...state.trades, trade] }));
-  },
+        await tradeStorage.setItem(trade.id, trade);
+        set((state) => ({ trades: [...state.trades, trade] }));
+      },
 
-  addAction: async (tradeId, actionData) => {
-    const state = get();
-    const trade = state.trades.find((t) => t.id === tradeId);
-    if (!trade) return;
+      addAction: async (tradeId, action) => {
+        const state = get();
+        const trade = state.trades.find((t) => t.id === tradeId);
+        if (!trade) return;
 
-    const newAction = { ...actionData, id: crypto.randomUUID() };
-    const updatedActions = [...trade.actions, newAction];
-    const updatedTrade = {
-      ...trade,
-      actions: updatedActions,
-      isActive: calculateTradeStatus(updatedActions),
-    };
+        const updatedTrade = {
+          ...trade,
+          actions: [
+            ...trade.actions,
+            { ...action, date: new Date().toISOString() },
+          ],
+          isActive: true, // Update active status
+        };
 
-    await tradeStorage.setItem(tradeId, updatedTrade);
-    set((state) => ({
-      trades: state.trades.map((t) => (t.id === tradeId ? updatedTrade : t)),
-    }));
-  },
+        // Update storage first
+        await tradeStorage.setItem(tradeId, updatedTrade);
 
-  updateAction: async (tradeId, actionId, actionData) => {
-    const state = get();
-    const trade = state.trades.find((t) => t.id === tradeId);
-    if (!trade) return;
+        // Then update state
+        set((state) => ({
+          trades: state.trades.map((t) =>
+            t.id === tradeId ? updatedTrade : t
+          ),
+        }));
+      },
 
-    const updatedActions = trade.actions.map((action) =>
-      action.id === actionId ? { ...actionData, id: action.id } : action
-    );
-    const updatedTrade = {
-      ...trade,
-      actions: updatedActions,
-      isActive: calculateTradeStatus(updatedActions),
-    };
+      updateAction: async (tradeId, actionId, actionData) => {
+        const state = get();
+        const trade = state.trades.find((t) => t.id === tradeId);
+        if (!trade) return;
 
-    await tradeStorage.setItem(tradeId, updatedTrade);
-    set((state) => ({
-      trades: state.trades.map((t) => (t.id === tradeId ? updatedTrade : t)),
-    }));
-  },
+        const updatedActions = trade.actions.map((action) =>
+          action.id === actionId ? { ...actionData, id: action.id } : action
+        );
+        const updatedTrade = {
+          ...trade,
+          actions: updatedActions,
+          isActive: calculateTradeStatus(updatedActions),
+        };
 
-  removeTrade: async (id) => {
-    await tradeStorage.removeItem(id);
-    set((state) => ({
-      trades: state.trades.filter((trade) => trade.id !== id),
-    }));
-  },
+        await tradeStorage.setItem(tradeId, updatedTrade);
+        set((state) => ({
+          trades: state.trades.map((t) =>
+            t.id === tradeId ? updatedTrade : t
+          ),
+        }));
+      },
 
-  removeAction: async (tradeId, actionId) => {
-    const state = get();
-    const trade = state.trades.find((t) => t.id === tradeId);
-    if (!trade) return;
+      removeTrade: async (id) => {
+        await tradeStorage.removeItem(id);
+        set((state) => ({
+          trades: state.trades.filter((trade) => trade.id !== id),
+        }));
+      },
 
-    const updatedActions = trade.actions.filter(
-      (action) => action.id !== actionId
-    );
-    const updatedTrade = {
-      ...trade,
-      actions: updatedActions,
-      isActive: calculateTradeStatus(updatedActions),
-    };
+      removeAction: async (tradeId, actionId) => {
+        const state = get();
+        const trade = state.trades.find((t) => t.id === tradeId);
+        if (!trade) return;
 
-    await tradeStorage.setItem(tradeId, updatedTrade);
-    set((state) => ({
-      trades: state.trades.map((t) => (t.id === tradeId ? updatedTrade : t)),
-    }));
-  },
+        const updatedActions = trade.actions.filter(
+          (action) => action.id !== actionId
+        );
+        const updatedTrade = {
+          ...trade,
+          actions: updatedActions,
+          isActive: calculateTradeStatus(updatedActions),
+        };
 
-  addNote: async (tradeId, text, image) => {
-    let compressedImage: string | null = null;
-    if (image) {
-      try {
-        compressedImage = await compressImage(image);
-      } catch (error) {
-        console.error("Failed to compress image:", error);
-        throw error;
-      }
+        await tradeStorage.setItem(tradeId, updatedTrade);
+        set((state) => ({
+          trades: state.trades.map((t) =>
+            t.id === tradeId ? updatedTrade : t
+          ),
+        }));
+      },
+
+      addNote: async (tradeId, text, image) => {
+        let compressedImage: string | null = null;
+        if (image) {
+          try {
+            compressedImage = await compressImage(image);
+          } catch (error) {
+            console.error("Failed to compress image:", error);
+            throw error;
+          }
+        }
+
+        const state = get();
+        const trade = state.trades.find((t) => t.id === tradeId);
+        if (!trade) return;
+
+        const newNote: TradeNote = {
+          id: crypto.randomUUID(),
+          text,
+          date: new Date().toISOString(),
+          ...(compressedImage && { image: compressedImage }),
+        };
+
+        const updatedTrade = {
+          ...trade,
+          notes: [...trade.notes, newNote],
+        };
+
+        await tradeStorage.setItem(tradeId, updatedTrade);
+        set((state) => ({
+          trades: state.trades.map((t) =>
+            t.id === tradeId ? updatedTrade : t
+          ),
+        }));
+      },
+
+      removeNote: async (tradeId, noteId) => {
+        const state = get();
+        const trade = state.trades.find((t) => t.id === tradeId);
+        if (!trade) return;
+
+        const updatedTrade = {
+          ...trade,
+          notes: trade.notes.filter((note) => note.id !== noteId),
+        };
+
+        await tradeStorage.setItem(tradeId, updatedTrade);
+        set((state) => ({
+          trades: state.trades.map((t) =>
+            t.id === tradeId ? updatedTrade : t
+          ),
+        }));
+      },
+
+      loadTrades: async () => {
+        const trades = await tradeStorage.getAllItems();
+        // Sort by most recent action date
+        const sortedTrades = trades.sort((a, b) => {
+          const aLatest = Math.max(
+            ...a.actions.map((action) => new Date(action.date).getTime())
+          );
+          const bLatest = Math.max(
+            ...b.actions.map((action) => new Date(action.date).getTime())
+          );
+          return bLatest - aLatest;
+        });
+        set({ trades: sortedTrades });
+      },
+    }),
+    {
+      name: "trade-storage",
     }
-
-    const state = get();
-    const trade = state.trades.find((t) => t.id === tradeId);
-    if (!trade) return;
-
-    const newNote: TradeNote = {
-      id: crypto.randomUUID(),
-      text,
-      date: new Date().toISOString(),
-      ...(compressedImage && { image: compressedImage }),
-    };
-
-    const updatedTrade = {
-      ...trade,
-      notes: [...trade.notes, newNote],
-    };
-
-    await tradeStorage.setItem(tradeId, updatedTrade);
-    set((state) => ({
-      trades: state.trades.map((t) => (t.id === tradeId ? updatedTrade : t)),
-    }));
-  },
-
-  removeNote: async (tradeId, noteId) => {
-    const state = get();
-    const trade = state.trades.find((t) => t.id === tradeId);
-    if (!trade) return;
-
-    const updatedTrade = {
-      ...trade,
-      notes: trade.notes.filter((note) => note.id !== noteId),
-    };
-
-    await tradeStorage.setItem(tradeId, updatedTrade);
-    set((state) => ({
-      trades: state.trades.map((t) => (t.id === tradeId ? updatedTrade : t)),
-    }));
-  },
-
-  loadTrades: async () => {
-    const trades = await tradeStorage.getAllItems();
-    // Sort by most recent action date
-    const sortedTrades = trades.sort((a, b) => {
-      const aLatest = Math.max(
-        ...a.actions.map((action) => new Date(action.date).getTime())
-      );
-      const bLatest = Math.max(
-        ...b.actions.map((action) => new Date(action.date).getTime())
-      );
-      return bLatest - aLatest;
-    });
-    set({ trades: sortedTrades });
-  },
-}));
+  )
+);
 
 // Load trades on store initialization
 useTradeStore.getState().loadTrades();
