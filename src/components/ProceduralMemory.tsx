@@ -219,6 +219,18 @@ export default function ProceduralMemory() {
     navigate(`/memory/${formattedTag}`);
   };
 
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      alert(t("errors.imageTooLarge"));
+      return;
+    }
+
+    setPreviewUrl(URL.createObjectURL(file));
+  };
+
   return (
     <>
       <div className="container mx-auto p-4">
@@ -242,7 +254,19 @@ export default function ProceduralMemory() {
                     </button>
                   </div>
                 ) : (
-                  <div className="w-24 h-24 flex-shrink-0 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg flex items-center justify-center text-sm text-gray-500 dark:text-gray-400">
+                  <div
+                    onClick={() =>
+                      document.getElementById("imageUpload")?.click()
+                    }
+                    className="w-24 h-24 flex-shrink-0 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg flex items-center justify-center text-sm text-gray-500 dark:text-gray-400 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700"
+                  >
+                    <input
+                      id="imageUpload"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleFileSelect}
+                      className="hidden"
+                    />
                     {t("actions.addImage")}
                   </div>
                 )}
