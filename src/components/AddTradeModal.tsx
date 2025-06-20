@@ -130,16 +130,16 @@ export default function AddTradeModal({
     }
   };
 
-  const getAggressivenessColor = (value: number): string => {
-    if (value <= 24) return "text-green-600 dark:text-green-400";
-    if (value <= 56) return "text-blue-600 dark:text-blue-400";
-    return "text-red-600 dark:text-red-400";
-  };
-
   const getAggressivenessBarColor = (value: number): string => {
     if (value <= 24) return "bg-green-600";
     if (value <= 56) return "bg-blue-600";
     return "bg-red-600";
+  };
+
+  const getAggressivenessColor = (value: number): string => {
+    if (value <= 24) return "text-green-600 dark:text-green-400";
+    if (value <= 56) return "text-blue-600 dark:text-blue-400";
+    return "text-red-600 dark:text-red-400";
   };
 
   return (
